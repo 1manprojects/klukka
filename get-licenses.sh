@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "Extracting backend dependencies from pom.xml and licenses.xml..."
 
 POM_FILE="pom.xml"
 LICENSES_FILE="target/generated-resources/licenses.xml"
