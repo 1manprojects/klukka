@@ -1,0 +1,224 @@
+.profile {
+    margin-left: 1rem;
+    //margin-left: auto;
+    //margin-right: auto;
+    .data {
+        display: grid;
+        width: 80%;
+        margin: 1rem auto;
+        justify-content: normal; // Ensures the content inside the grid is centered horizontally
+        align-items: center; // Ensures the content inside the grid is centered vertically (if needed)
+        text-align: left;
+
+        @media (max-width: 900px) {
+            display: block;
+        }
+
+        hr {
+            width: 100%;
+            height: 1px;
+        }
+
+        .alert{
+            background-color: coral;
+            color: white;
+            font-size: large;
+            font-weight: bold;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-width: 500px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .new-token {
+            display: grid;
+            max-width: 500px;
+            grid-row-gap: 1rem;
+            padding: 1rem;
+            button {
+                margin-left: auto;
+                margin-left: auto;
+                padding: 0.5rem;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .info-text {
+                font-size: 0.9rem;
+                padding: 0.2rem;
+                background-color: #d8fdde;
+                margin-bottom: 0.5rem;
+            }
+           
+            .token-info {
+                border: 1px solid #ddd;
+                padding: 1rem;
+                border-radius: 5px;
+
+                .token-value {
+                    font-family: monospace;
+                    word-break: break-all; // Ensures long tokens break to the next line
+                    padding: 0.5rem;
+                    background-color: #f0f0f0;
+                    border-radius: 5px;
+                    span {
+                        font-weight: bold;
+                        font-size: large;
+                    }
+                }
+            }
+        }
+
+            .tokens {
+                width: 100%;
+                border-collapse: collapse;
+
+                th, td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                }
+
+                th {
+                    background-color: #f2f2f2;
+                    text-align: left;
+                }
+
+                tr {
+                    cursor: pointer;
+                }
+
+                tr:nth-child(even) {
+                    background-color: #f9f9f9;
+                }
+
+                tr:nth-child(odd) {
+                    background-color: #ffffff;
+                }
+
+                tr:hover {
+                    background-color: #ddd;
+                }
+
+                tr.archived {
+                    background-color: #ffe6e6; // Light red for archived rows
+                }
+
+                td:nth-last-child(-n+1) {
+                    width: 1%;
+                    white-space: nowrap;
+                    text-align: center;
+                }
+
+                .action-icon {
+                    cursor: pointer;
+                    margin-left: 5px;
+                    transition: color 0.3s;
+
+                    &:hover {
+                        color: #0056b3; // Darker shade on hover
+                    }
+                }
+            }
+        
+        .profile-info {
+            flex: 1;
+            .detail-info {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: start;
+
+                > * {
+                    margin-right: 1rem; // Optional: Add spacing between items
+                }
+
+                > *:last-child {
+                    margin-right: 0; // Remove margin for the last item
+                }
+            }
+            //margin-right: 20px; // Optional: Add some space between the two sections
+            input {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+            }
+            p {
+                font-weight: bold;
+            }
+            .warning {
+                color: red;
+            }
+            .change-password {
+                display: grid;
+                max-width: 500px;
+
+                label, input, button {
+                    margin-bottom: 10px;
+                }
+
+                button {
+                    margin-left: auto;
+                    margin-left: auto;
+                    padding: 0.5rem;
+                    padding-left: 1rem;
+                    padding-right: 1rem;
+                }
+            }
+        }
+
+        .project-info {
+            flex: 1;
+            //margin-left: 20px; // Optional: Add some space between the two sections
+            table {
+                width: 100%;
+                border-collapse: collapse;
+
+                th, td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                }
+
+                th {
+                    background-color: #f2f2f2;
+                    text-align: left;
+                }
+
+                tr {
+                    cursor: pointer;
+                }
+
+                tr:nth-child(even) {
+                    background-color: #f9f9f9;
+                }
+
+                tr:nth-child(odd) {
+                    background-color: #ffffff;
+                }
+
+                tr:hover {
+                    background-color: #ddd;
+                }
+
+                tr.archived {
+                    background-color: #ffe6e6; // Light red for archived rows
+                }
+
+                td:nth-last-child(-n+2) {
+                    width: 1%;
+                    white-space: nowrap;
+                    text-align: center;
+                }
+
+                .action-icon {
+                    cursor: pointer;
+                    margin-left: 5px;
+                    transition: color 0.3s;
+
+                    &:hover {
+                        color: #0056b3; // Darker shade on hover
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,63 @@
+build:
+  name: Build and Push Docker Image
+  runs-on: ubuntu-latest
+  if: startsWith(github.ref, 'refs/tags/')
+
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Set up Java 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 'lts/*'
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_SECRET }}
+
+    - name: Build and Test Project
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        mvn clean package -Dproject.version=$VERSION
+        mvn test
+        cd src/main/ui
+        npm install -g npm-license-crawler
+        npm-license-crawler --dependencies --onlyDirectDependencies --production --csv ../resources/frontend-deps.csv
+        cd -
+        mvn license:download-licenses
+        sh get-licenses.sh
+        mvn compile
+        mvn typescript-generator:generate
+        mvn license:update-file-header -X
+        mvn install -Drevision=$VERSION
+
+    - name: Build Docker Image
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        docker build -t $IMAGE_NAME:$VERSION .
+        docker tag $IMAGE_NAME:$VERSION $IMAGE_NAME:latest
+
+    - name: Push Docker Image
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        docker push $IMAGE_NAME:$VERSION
+        docker push $IMAGE_NAME:latest
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: klukka-jar
+        path: ./target/klukka-jar-with-dependencies.jar
+        retention-days: 7

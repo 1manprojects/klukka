@@ -1,0 +1,30 @@
+.calendar {
+    .cal-view {
+        margin-left: 2rem;
+        margin-right: 2rem;
+        margin-top: 2rem;
+        
+        .rbc-time-slot {
+            min-width: 77.6px;
+            z-index: 1;
+            cursor: pointer;
+            &:hover {
+                background-color: lightblue;
+            }
+        }
+        .rbc-event {
+            z-index: 3;
+            cursor: pointer;
+            &:hover {
+                border: 3px black solid;
+            }
+        }
+        .rbc-event-content {
+            margin: 0.5rem;
+            font-size: large;
+        }
+        .rbc-toolbar-label {
+            margin: 1rem;
+        }
+    }
+}

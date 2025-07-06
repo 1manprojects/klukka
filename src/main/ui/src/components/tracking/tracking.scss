@@ -1,0 +1,51 @@
+.tracked {
+    display: grid;
+
+    .title {
+        height: 5vh;
+    }
+
+    .CircularProgressbar {
+        height: 50vh;
+    }
+
+    .progress-center {
+        position: fixed;
+        top: 20vh;
+        cursor: pointer;
+        height: 40vh;
+        width: 40vh;
+        border-radius: 50%;
+
+        display: grid;
+        grid-template-rows: 4vh 2vh 4vh auto;
+
+        .duration {
+            font-size: 10vh;
+            height: 4vh;
+        }
+
+        .date {
+            font-size: 2vh;
+        }
+
+        .time {
+            font-size: 2vh;
+        }
+
+        .stop-icon {
+            margin-left: auto;
+            margin-right: auto;
+            position: initial;
+            //top: 45vh;
+            font-size: 10vh;
+            //left: 46vw;
+            z-index: 1;
+            color: black;
+
+            &.stop {
+                color: rgb(117, 51, 51);
+            }
+        }
+    }
+}

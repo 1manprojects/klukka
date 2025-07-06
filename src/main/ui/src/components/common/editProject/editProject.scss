@@ -1,0 +1,61 @@
+.editProject {
+    width: 50vw;
+    margin-left: auto;
+    margin-right: auto;
+    display: grid;
+    label {
+      text-align: left;
+      margin-bottom: 0.5rem;
+      margin-top: 1rem;
+    }
+    .color-select {
+      width: 10vw;
+      height: 3vw;
+      min-width: 75px;
+      min-height: 35px;
+      max-width: 150px;
+      max-height: 35px;
+      border-radius: 1rem;
+      padding: unset;
+    }
+    .buttons {
+      margin-top: 2rem;
+      button {
+        min-width: 10rem;
+        width: 10vw;
+        margin: 1rem;
+        cursor: pointer;
+        padding: 1rem;
+        border-radius: 1rem;
+        appearance: none;
+        border: 1px solid rgba(27, 31, 35, .15);
+        border-radius: 6px;
+        box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+        box-sizing: border-box;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 20px;
+        padding: 6px 16px;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        vertical-align: middle;
+        white-space: nowrap;
+        
+      }
+      .ok {
+        background-color: #2ea44f;
+        color: #fff;
+      }
+      .cancel {
+        background-color: #a42e2e;
+        color: #fff;
+      }
+    }
+    
+  }
