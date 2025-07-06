@@ -1,4 +1,4 @@
-target/
+target/*
 .idea/
 src/main/resources/frontend/*
 src/main/ui/node_modules
@@ -7,7 +7,5 @@ src/main/ui/dist
 
 /postgres_data
 
-/src/main/resources/backend-deps.csv
-/src/main/resources/frontend-deps.csv
 /.vscode/
 /data/privacy.html
