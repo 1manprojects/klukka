@@ -1,6 +1,6 @@
 services:
   klukka:
-    image: klukka
+    image: 1manprojects/klukka
     depends_on:
       - postgres
     environment:
