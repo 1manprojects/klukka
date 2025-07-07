@@ -1,3 +1,4 @@
+target/
 target/*
 .idea/
 src/main/resources/frontend/*
@@ -9,3 +10,4 @@ src/main/ui/dist
 
 /.vscode/
 /data/privacy.html
+/.env
