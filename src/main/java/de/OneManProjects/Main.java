@@ -136,10 +136,16 @@ public class Main {
                     openConfig.withDocumentationPath("/openapi")
                             .withPrettyOutput()));
             config.registerPlugin(new SwaggerPlugin());
+
             config.staticFiles.add(staticFiles -> {
                 staticFiles.location = Location.CLASSPATH;
                 staticFiles.directory = "/frontend";
                 staticFiles.mimeTypes.add(ContentType.TEXT_JS);
+            });
+            config.staticFiles.add(staticFiles -> {
+                staticFiles.location = Location.CLASSPATH;
+                staticFiles.directory = "/frontend";
+                staticFiles.hostedPath = "/reset";
             });
             config.spaRoot.addFile("/", "/frontend/index.html", Location.CLASSPATH);
         });
