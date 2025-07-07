@@ -26,7 +26,5 @@ package de.OneManProjects.data.dto;
  * #L%
  */
 
-import java.util.Optional;
-
 public record PrivacyInfo(String link, String html) {
 }
