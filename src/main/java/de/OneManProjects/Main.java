@@ -60,7 +60,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -137,12 +136,12 @@ public class Main {
                     openConfig.withDocumentationPath("/openapi")
                             .withPrettyOutput()));
             config.registerPlugin(new SwaggerPlugin());
-            config.spaRoot.addFile("/", "/frontend/index.html", Location.CLASSPATH);
             config.staticFiles.add(staticFiles -> {
                 staticFiles.location = Location.CLASSPATH;
                 staticFiles.directory = "/frontend";
                 staticFiles.mimeTypes.add(ContentType.TEXT_JS);
             });
+            config.spaRoot.addFile("/", "/frontend/index.html", Location.CLASSPATH);
         });
 
         app.before(ctx -> {

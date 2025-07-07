@@ -48,9 +48,8 @@ export const Footer = (): ReactElement => {
     return (
         <footer className="footer">
             <div className="footer-content">
-                <span>© 2025 Klukka — Licensed under <a href="/info">MIT License</a></span>
-                <span>Version: {version}</span>
-                <a href="/info" className="footer-link">Dependencies & Licenses</a>
+                <a href="https://github.com/1manprojects/klukka" className="footer-link">© 2025 Klukka — MIT License</a>
+                <a href="/info" className="footer-link">Version: {version}</a>
                 <a href={privacyUrl !== null? privacyUrl : "/privacy-policy"} className="footer-link">Privacy Policy</a>
                 <a href="mailto:klukka@1manprojects.de" className="footer-link">Contact</a>
             </div>
