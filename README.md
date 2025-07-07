@@ -1,9 +1,26 @@
 # Klukka
-Simple and easy-to-use Time tracking service
+Klukka (Icelandic for clock) is a simple and easy to use Time Tracking service that allows you to track times spent an various projects in a browser.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="screenshots/tracking.png" width="300"/></td>
+    <td><img src="screenshots/projects.png" width="300"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/calendar.png" width="300"/></td>
+    <td><img src="screenshots/activity.png" width="300"/></td>
+  </tr>
+</table>
 
 ## Features
-Manage multiple different Projects and track times with ease per browser on Mobile and or Desktop. Edit and view Projects in the Calendar and track activity over Day, Week, or Month.
-Create Groups to share Projects and allow multiple people to track their time on Projects.
+- Manage multiple projects with ease and track times to the second in your browser Mobile or Desktop. 
+- Easily switch between projects. All your tracked times can be viewed and edited in a calendar.
+- Gain insights into the times where you have spent the most time
+- Export the Data as CSV
+- Manage Groups to share Projects with multiple people to track times on the same Project
+- Group admins can view and analyze the groups tracked times
 
 ## Docker
 The most simple way is to run with docker-compose using the docker-compose.yaml file in the repository. Update the envirmoent variables with your own data and run docker compose up -d
