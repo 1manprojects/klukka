@@ -2,12 +2,12 @@ target/
 target/*
 .idea/
 src/main/resources/frontend/*
-src/main/ui/node_modules
-src/main/ui/node
-src/main/ui/dist
+src/main/ui/node_modules/
+src/main/ui/node/
+src/main/ui/dist/
 
 /postgres_data
 
 /.vscode/
 /data/privacy.html
-/.env
+.env
