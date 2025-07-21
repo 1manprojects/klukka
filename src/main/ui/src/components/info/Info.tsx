@@ -27,6 +27,8 @@ import { ReactElement, useEffect, useState } from "react";
 import { DepInfo } from "../../datatypes/types";
 import { getDepInfo } from "../../Api";
 import './info.scss';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 export const Info = (): ReactElement => {
 
@@ -47,8 +49,7 @@ export const Info = (): ReactElement => {
         <div className="info">
             <h1>Klukka - Timetracking</h1>
             <h2>1 Man Projects</h2>
-            <h2>Version {info.version}</h2>
-            <h3>Github Repository</h3>
+            <a href="https://github.com/1manprojects/klukka"><FontAwesomeIcon icon={faGithub} /> Github Repository</a>
             <h3>Licensed under MIT </h3>
             <div className="license-container">
 <pre>
