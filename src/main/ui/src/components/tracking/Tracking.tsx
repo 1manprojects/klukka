@@ -126,7 +126,7 @@ export const Tracking = (props: TrackingProps): ReactElement => {
 
     return <div className="tracked">
         <span className="title">{props.title}</span>
-        <CircularProgressbarWithChildren className="progress-Bar" value={seconds} maxValue={60} styles={{path: { stroke: isHover? '#753333' : '#4DA4E6' }, trail: { stroke: '#d6d6d6' } }}>
+        <CircularProgressbarWithChildren className="progress-Bar" value={seconds} maxValue={59} styles={{path: { stroke: isHover? '#753333' : '#4DA4E6' }, trail: { stroke: '#d6d6d6' } }}>
             <div className={"progress-center"}
                 onClick={() => stop()}
                 onMouseEnter={handleMouseEnter}
