@@ -9,9 +9,13 @@
         height: 50vh;
     }
 
+    [data-test-id="CircularProgressbarWithChildren__children"] {
+        margin-top: unset;
+        top: unset;
+    }
+
     .progress-center {
-        position: fixed;
-        top: 20vh;
+        position: relative;
         cursor: pointer;
         height: 40vh;
         width: 40vh;
