@@ -10,13 +10,10 @@
     }
 
     [data-test-id="CircularProgressbarWithChildren__children"] {
-        margin-top: unset;
-        top: unset;
+        position: absolute;
     }
 
     .progress-center {
-        position: absolute;
-        top: -90%;
         cursor: pointer;
         height: 40vh;
         width: 40vh;
@@ -24,10 +21,12 @@
 
         display: grid;
         grid-template-rows: 4vh 2vh 4vh auto;
+        margin-top: 100%;
+        position: absolute;
+        top: -90%;
 
         .duration {
             font-size: 10vh;
-            height: 4vh;
         }
 
         .date {
