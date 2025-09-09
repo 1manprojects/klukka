@@ -72,8 +72,8 @@ export const Profile = (): ReactElement => {
         }
     }
 
-    const onArchive = async (id: number, archive: boolean): Promise<void> => {
-
+    const onArchive = async (e: React.MouseEvent, id: number, archive: boolean): Promise<void> => {
+        e.stopPropagation();
         const archiveString = archive ? "Do you want to unarchive the project?" : 
             "Do you want to archive this project?\n" +
             "Archived projects wont be visible in the project list.\n" +
@@ -105,7 +105,8 @@ export const Profile = (): ReactElement => {
         }
     }
 
-    const onDeleteProject = async (id: number): Promise<void> => {
+    const onDeleteProject = async (e: React.MouseEvent, id: number): Promise<void> => {
+        e.stopPropagation();
         if (window.confirm("Do you really want to delete this project?\n" +
             "This action cannot be undone and all data will be lost.")) {
                 const res = await userDelProject(id);
@@ -261,9 +262,9 @@ export const Profile = (): ReactElement => {
                                 <td>{project.description}</td>
                                 <td style={{backgroundColor: project.color}}></td>
                                 <td>{project.archived? 
-                                    <FontAwesomeIcon className="action-icon" title="Unarchive Project" icon={faBoxOpen} onClick={()=> onArchive(project.id, false)}/>: 
-                                    <FontAwesomeIcon className="action-icon" title="Archive Project" icon={faBoxArchive} onClick={()=> onArchive(project.id, true)}/>}</td>
-                                <td><FontAwesomeIcon className="action-icon" title="Delete Archive" icon={faTrash} onClick={() => onDeleteProject(project.id)}/></td>
+                                    <FontAwesomeIcon className="action-icon" title="Unarchive Project" icon={faBoxOpen} onClick={(e)=> onArchive(e, project.id, false)}/>: 
+                                    <FontAwesomeIcon className="action-icon" title="Archive Project" icon={faBoxArchive} onClick={(e)=> onArchive(e, project.id, true)}/>}</td>
+                                <td><FontAwesomeIcon className="action-icon" title="Delete Archive" icon={faTrash} onClick={(e) => onDeleteProject(e, project.id)}/></td>
                             </tr>
                         ))}
                     </tbody>

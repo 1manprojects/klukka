@@ -78,6 +78,7 @@ export const Tracking = (props: TrackingProps): ReactElement => {
     }, [seconds])
 
     useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
         const update = setInterval(() => {
             if (props && props.tracking !== null) {
                 const t1 = new Date(props.tracking.start);
