@@ -226,7 +226,7 @@ export const getProjects = async (): Promise<UserProjects | null> => {
 }
 
 export const getActive = async (): Promise<Tracked | null> => {
-    const res = await runPost("active", null);
+    const res = await runGet("active");
     return returnOrNull<Tracked>(res)
 }
 
@@ -246,7 +246,7 @@ export const stopTracking = async (p: number): Promise<boolean> => {
 }
 
 export const getMonthMins = async (): Promise<number> => {
-    const res = await runPost("month", null);
+    const res = await runGet("month");
     return returnOrDefault<number>(res, 0);
 }
 
