@@ -166,8 +166,8 @@ public class Main {
         app.post("api/start", ctx -> runAction(ctx, Users::startTracking, true));
         app.post("api/stop", ctx -> runAction(ctx, Users::stopTracking, true));
         app.post("api/add", ctx -> runAction(ctx, Users::addPersonalProject, true));
-        app.post("api/active", ctx -> runAction(ctx, Users::getActive, true));
-        app.post("api/month", ctx -> runAction(ctx, Users::getMonth, true));
+        app.get("api/active", ctx -> runAction(ctx, Users::getActive, true));
+        app.get("api/month", ctx -> runAction(ctx, Users::getMonth, true));
         app.post("api/deleteProject", ctx -> runAction(ctx, Users::deleteUserProject, true));
         app.post("api/data", ctx -> runAction(ctx, Users::getDataToAnalyse, true));
         app.post("api/delete", ctx -> runAction(ctx, Users::deleteTracking, true));
@@ -276,6 +276,7 @@ public class Main {
             if (userID.isPresent()) {
                 Auth.setCookies(ctx, userID.get());
                 final Response response = new Response(true);
+                ctx.status(HttpStatus.OK);
                 ctx.json(response);
             } else {
             ctx.status(HttpStatus.NOT_ACCEPTABLE);
