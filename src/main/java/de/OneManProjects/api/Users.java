@@ -451,10 +451,15 @@ public class Users {
         final int userID = Auth.getUserFromContext(ctx);
         final Optional<Project> p = Database.getProjectById(start.getProjectID());
         if (p.isPresent()) {
-            final int res = Database.addTracking(new Tracked(
-                    -1, userID, start.getProjectID(), Timestamp.from(Instant.now()), start.getTimeZone()
-            ));
-            Responses.setResponseOrError(ctx, res > 0);
+            final Optional<Tracked> current = Database.getActiveTracking(userID);
+            if (current.isEmpty()) {
+                final int res = Database.addTracking(new Tracked(
+                        -1, userID, start.getProjectID(), Timestamp.from(Instant.now()), start.getTimeZone()
+                ));
+                Responses.setResponseOrError(ctx, res > 0);
+            } else {
+                Responses.setResponseOrError(ctx, current.get().getId());
+            }
         } else {
             ctx.status(HttpStatus.FORBIDDEN);
             ctx.json(false);
