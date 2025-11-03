@@ -38,6 +38,7 @@ public class Responses {
             ctx.status(HttpStatus.NO_CONTENT);
         } else {
             final Response response = new Response(data.orElse(null));
+            ctx.status(HttpStatus.OK);
             ctx.json(response);
         }
     }
@@ -47,6 +48,7 @@ public class Responses {
             ctx.status(HttpStatus.NO_CONTENT);
         } else {
             final Response response = new Response(data);
+            ctx.status(HttpStatus.OK);
             ctx.json(response);
         }
     }

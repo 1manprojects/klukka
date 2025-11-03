@@ -61,14 +61,12 @@ export const UserProjects = (): ReactElement => {
     }
 
     useEffect(() => {
-      console.log("fetching data, useEffect");
       fetchAndSetData();
     }, [])
   
     const closeDialog = async (): Promise<void> => {
         setDialog(false);
         const res = await fetchAndSetData();
-        console.log("fetching data, closeDialog");
       if (res !== null && res.tracking !== null) {
         setTracking(res.tracking);
       }
@@ -78,7 +76,6 @@ export const UserProjects = (): ReactElement => {
       const res = await startTracking({ projectID: id, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })
       if (res) {
         const t = await getActive();
-        console.log("timzone: " + Intl.DateTimeFormat().resolvedOptions().timeZone);
         setTracking(t);
       } else {
         setTracking(null);
@@ -92,7 +89,6 @@ export const UserProjects = (): ReactElement => {
           setTracking(null);
         }
         await fetchAndSetData();
-        console.log("fetching data, endTracking");
       }
     }
 
@@ -101,7 +97,6 @@ export const UserProjects = (): ReactElement => {
       if (confirm("Do you realy want to delete the Project!\nAll tracked data will be deleted!")) {
         await userDelProject(id);
         await fetchAndSetData();
-        console.log("fetching data, DeleteProject");
       }
     }
   
