@@ -50,10 +50,4 @@ public class Responses {
             ctx.json(response);
         }
     }
-
-    public static void setBadRequest(final Context ctx, final String message) {
-        ctx.status(HttpStatus.BAD_REQUEST);
-        final Response response = new Response(message);
-        ctx.json(response);
-    }
 }
