@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Projects {
     static Project parseProject(final ResultSet rs) throws SQLException {
@@ -154,12 +155,16 @@ public class Projects {
     public static List<Tracked> getGroupTrackedForRange(final List<Integer> groupProjectIds, final Instant start, final Instant end) throws SQLException {
         final Timestamp fromStart = Timestamp.from(start);
         final Timestamp fromEnd = Timestamp.from(end);
+        final Object[] params = Stream.concat(
+                groupProjectIds.stream().map(i -> (Object) i),
+                Stream.of(fromStart, fromEnd)
+        ).toArray();
         return Database.executeQueryList(
                 "SELECT * FROM " + Database.TRACKING_TABLE +
                         " WHERE project in ("+ groupProjectIds.stream().map(id -> "?").collect(Collectors.joining(",")) +
                         ") and start_time >= ? and end_time <= ?",
                 Projects::parseTracked,
-                groupProjectIds.toArray(), fromStart, fromEnd
+                params
         );
     }
 
