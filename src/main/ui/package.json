@@ -23,7 +23,7 @@
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.0",
     "typescript": "^5.0.4",
-    "vite": "^5.2.11",
+    "vite": "^6.4.1",
     "vite-tsconfig-paths": "^4.3.2"
   },
   "overrides": {
@@ -73,6 +73,6 @@
     "sass": "^1.76.0",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.32.1",
-    "vite": "^6.0.5"
+    "vite": "^6.4.1"
   }
 }
