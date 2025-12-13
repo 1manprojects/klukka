@@ -39,6 +39,7 @@ import { ToastContainer } from 'react-toastify';
 import { Info } from './components/info/Info';
 import { Footer } from './components/footer/Footer';
 import { Privacy } from './privacy/Privacy';
+import { JSX } from 'react';
 
 function App(): JSX.Element {
 
