@@ -26,11 +26,13 @@ package de.OneManProjects.api;
  * #L%
  */
 
-import de.OneManProjects.Database;
 import de.OneManProjects.data.*;
 import de.OneManProjects.data.dto.*;
 import de.OneManProjects.data.enums.RefType;
 import de.OneManProjects.data.enums.Role;
+import de.OneManProjects.database.Groups;
+import de.OneManProjects.database.Projects;
+import de.OneManProjects.database.Tokens;
 import de.OneManProjects.export.Exporter;
 import de.OneManProjects.security.Auth;
 import io.javalin.http.Context;
@@ -61,7 +63,7 @@ public class Users {
     )
     public static void deleteAccount(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
-        Responses.setResponseOrError(ctx, Database.deleteAllUserProjects(userId) && Database.deleteUser(userId));
+        Responses.setResponseOrError(ctx, Projects.deleteAllUserProjects(userId) && de.OneManProjects.database.Users.deleteUser(userId));
     }
 
     @OpenApi(
@@ -84,7 +86,7 @@ public class Users {
         final int userId = Auth.getUserFromContext(ctx);
         final UserApiToken userApiToken = ctx.bodyAsClass(UserApiToken.class);
         final String apiToken = Auth.generateApiToken();
-        if (Database.addUserApiToken(userId, apiToken, userApiToken.description(), userApiToken.expiration())) {
+        if (Tokens.addUserApiToken(userId, apiToken, userApiToken.description(), userApiToken.expiration())) {
             Responses.setResponseOrError(ctx, apiToken);
         } else {
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -103,7 +105,7 @@ public class Users {
     )
     public static void getUserTokens(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
-        final List<UserApiToken> tokens = Database.getUserApiTokens(userId);
+        final List<UserApiToken> tokens = Tokens.getUserApiTokens(userId);
         Responses.setResponseOrError(ctx, tokens);
     }
 
@@ -125,7 +127,7 @@ public class Users {
     public static void deleteToken(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
         final int tokenId = ctx.bodyAsClass(Integer.class);
-        final boolean res = Database.deleteUserToken(userId, tokenId);
+        final boolean res = Tokens.deleteUserToken(userId, tokenId);
         Responses.setResponseOrError(ctx, res);
     }
 
@@ -147,7 +149,7 @@ public class Users {
     public static void updateUserMail(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
         final String newMail = ctx.bodyAsClass(String.class);
-        Responses.setResponseOrError(ctx, Database.updateUserMail(userId, newMail));
+        Responses.setResponseOrError(ctx, de.OneManProjects.database.Users.updateUserMail(userId, newMail));
     }
 
     @OpenApi(
@@ -163,10 +165,10 @@ public class Users {
     )
     public static void getUserData(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
-        final List<Project> projects = Database.getProjects(userId, true);
-        final Optional<User> user = Database.getUserInfo(userId);
-        final List<Group> groups = Database.getUserGroups(userId);
-        final List<UserApiToken> tokens = Database.getUserApiTokens(userId);
+        final List<Project> projects = Projects.getProjects(userId, true);
+        final Optional<User> user = de.OneManProjects.database.Users.getUserInfo(userId);
+        final List<Group> groups = Groups.getUserGroups(userId);
+        final List<UserApiToken> tokens = Tokens.getUserApiTokens(userId);
         if (user.isPresent()) {
             Responses.setResponseOrError(ctx, new UserData(user.get(), projects, groups, tokens));
         } else {
@@ -231,8 +233,8 @@ public class Users {
         final ArchiveId archiveId = ctx.bodyAsClass(ArchiveId.class);
         final int userID = Auth.getUserFromContext(ctx);
         boolean res = false;
-        if (Database.canUserManageProject(userID, archiveId.projectId())) {
-            res = Database.setProjectArchive(archiveId.projectId(), archiveId.archive());
+        if (Projects.canUserManageProject(userID, archiveId.projectId())) {
+            res = Projects.setProjectArchive(archiveId.projectId(), archiveId.archive());
         }
         Responses.setResponseOrError(ctx, res);
     }
@@ -255,7 +257,7 @@ public class Users {
     public static void updateTracking(final Context ctx) throws SQLException {
         final Tracked tracked = ctx.bodyAsClass(Tracked.class);
         final int userID = Auth.getUserFromContext(ctx);
-        final boolean res = Database.updateTracking(tracked, userID);
+        final boolean res = Projects.updateTracking(tracked, userID);
         Responses.setResponseOrError(ctx, res);
     }
 
@@ -278,9 +280,9 @@ public class Users {
         final DataFilter filter = ctx.bodyAsClass(DataFilter.class);
         final int userId = Auth.getUserFromContext(ctx);
         if (userId > -1) {
-            final List<Project> userProjects = Database.getProjects(userId, true);
-            final List<Project> groupProjects = Database.getUserGroupProjects(userId);
-            final List<Tracked> tracked = Database.getTrackedForRange(userId, Instant.parse(filter.start()), Instant.parse(filter.end()));
+            final List<Project> userProjects = Projects.getProjects(userId, true);
+            final List<Project> groupProjects = Projects.getUserGroupProjects(userId);
+            final List<Tracked> tracked = Projects.getTrackedForRange(userId, Instant.parse(filter.start()), Instant.parse(filter.end()));
             Responses.setResponseOrError(ctx, new AnalysisData(userProjects, groupProjects, tracked));
         }
     }
@@ -303,7 +305,7 @@ public class Users {
     public static void deleteTracking(final Context ctx) throws SQLException {
         final int id = ctx.bodyAsClass(Integer.class);
         final int userID = Auth.getUserFromContext(ctx);
-        final boolean res = Database.deleteTracking(id, userID);
+        final boolean res = Projects.deleteTracking(id, userID);
         Responses.setResponseOrError(ctx, res);
     }
 
@@ -325,10 +327,10 @@ public class Users {
     public static void deleteUserProject(final Context ctx) throws SQLException {
         final int idToDel = ctx.bodyAsClass(Integer.class);
         final int userId = Auth.getUserFromContext(ctx);
-        final Optional<Project> p = Database.getProjectById(idToDel);
+        final Optional<Project> p = Projects.getProjectById(idToDel);
         boolean res = false;
         if (p.isPresent() && p.get().getRefType().equals(RefType.USER) && p.get().getRef() == userId) {
-            res =Database.deleteProject(userId, idToDel);
+            res = Projects.deleteProject(userId, idToDel);
         }
         Responses.setResponseOrError(ctx, res);
     }
@@ -345,7 +347,7 @@ public class Users {
     )
     public static void getUserRole(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
-        final List<Role> roles = Database.getUserRoles(userId);
+        final List<Role> roles = de.OneManProjects.database.Users.getUserRoles(userId);
         Responses.setResponseOrError(ctx, Role.getHighestRole(roles));
     }
 
@@ -361,8 +363,8 @@ public class Users {
     )
     public static void getUserProjects(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
-        final List<Project> userProjects = Database.getProjects(userId, false);
-        final List<Project> groupProjects = Database.getUserGroupProjects(userId);
+        final List<Project> userProjects = Projects.getProjects(userId, false);
+        final List<Project> groupProjects = Projects.getUserGroupProjects(userId);
         Responses.setResponseOrError(ctx, new UserProjects(userProjects, groupProjects));
     }
 
@@ -385,8 +387,8 @@ public class Users {
     public static void updateProject(final Context ctx) throws SQLException {
         final Project toUpdate = ctx.bodyAsClass(Project.class);
         final int userId = Auth.getUserFromContext(ctx);
-        if (Database.canUserManageProject(userId, toUpdate.getId())) {
-            Responses.setResponseOrError(ctx, Database.updateProjects(toUpdate));
+        if (Projects.canUserManageProject(userId, toUpdate.getId())) {
+            Responses.setResponseOrError(ctx, Projects.updateProjects(toUpdate));
         } else {
             ctx.status(HttpStatus.FORBIDDEN);
         }
@@ -404,8 +406,8 @@ public class Users {
     )
     public static void getUserArchivedProjects(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
-        final List<Project> userProjects = Database.getProjects(userId, true);
-        final List<Project> groupProjects = Database.getUserGroupProjects(userId);
+        final List<Project> userProjects = Projects.getProjects(userId, true);
+        final List<Project> groupProjects = Projects.getUserGroupProjects(userId);
         Responses.setResponseOrError(ctx, new UserProjects(userProjects, groupProjects));
     }
 
@@ -427,7 +429,7 @@ public class Users {
     public static void addPersonalProject(final Context ctx) throws SQLException {
         final Project project = ctx.bodyAsClass(Project.class);
         final int userId = Auth.getUserFromContext(ctx);
-        Responses.setResponseOrError(ctx, Database.addProject(project, userId));
+        Responses.setResponseOrError(ctx, Projects.addProject(project, userId));
     }
 
     @OpenApi(
@@ -449,11 +451,11 @@ public class Users {
     public static void startTracking(final Context ctx) throws SQLException {
         final Start start = ctx.bodyAsClass(Start.class);
         final int userID = Auth.getUserFromContext(ctx);
-        final Optional<Project> p = Database.getProjectById(start.getProjectID());
+        final Optional<Project> p = Projects.getProjectById(start.getProjectID());
         if (p.isPresent()) {
-            final Optional<Tracked> current = Database.getActiveTracking(userID);
+            final Optional<Tracked> current = Projects.getActiveTracking(userID);
             if (current.isEmpty()) {
-                final int res = Database.addTracking(new Tracked(
+                final int res = Projects.addTracking(new Tracked(
                         -1, userID, start.getProjectID(), Timestamp.from(Instant.now()), start.getTimeZone()
                 ));
                 Responses.setResponseOrError(ctx, res > 0);
@@ -478,7 +480,7 @@ public class Users {
     )
     public static void getActive(final Context ctx) throws SQLException {
         final int userID = Auth.getUserFromContext(ctx);
-        final Optional<Tracked> res = Database.getActiveTracking(userID);
+        final Optional<Tracked> res = Projects.getActiveTracking(userID);
         Responses.setResponseOrError(ctx, res, true);
     }
 
@@ -494,7 +496,7 @@ public class Users {
     )
     public static void getMonth(final Context ctx) throws SQLException {
         final int userID = Auth.getUserFromContext(ctx);
-        final double res = Database.getTrackedMinutesThisMonth(userID);
+        final double res = Projects.getTrackedMinutesThisMonth(userID);
         Responses.setResponseOrError(ctx, res);
     }
 
@@ -516,7 +518,7 @@ public class Users {
     public static void stopTracking(final Context ctx) throws SQLException {// throws SQLException {
         final int userID = Auth.getUserFromContext(ctx);
         final Integer id = ctx.bodyAsClass(Integer.class);
-        final boolean res = Database.stopTracking(id, userID);
+        final boolean res = Projects.stopTracking(id, userID);
         Responses.setResponseOrError(ctx, res);
     }
 
@@ -538,7 +540,7 @@ public class Users {
     public static void updatePassword(final Context ctx) throws SQLException {
         final String newPass = ctx.bodyAsClass(String.class);
         final int userID = Auth.getUserFromContext(ctx);
-        final boolean res = Database.updatePassword(userID, Auth.hashPassword(newPass));
+        final boolean res = de.OneManProjects.database.Users.updatePassword(userID, Auth.hashPassword(newPass));
         Responses.setResponseOrError(ctx, res);
     }
 }

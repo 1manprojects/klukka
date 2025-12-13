@@ -26,12 +26,13 @@ package de.OneManProjects.api;
  * #L%
  */
 
-import de.OneManProjects.Database;
 import de.OneManProjects.data.Group;
 import de.OneManProjects.data.Project;
 import de.OneManProjects.data.Tracked;
 import de.OneManProjects.data.User;
 import de.OneManProjects.data.dto.*;
+import de.OneManProjects.database.Projects;
+import de.OneManProjects.database.Users;
 import de.OneManProjects.export.Exporter;
 import de.OneManProjects.mail.Mail;
 import de.OneManProjects.security.Auth;
@@ -71,10 +72,10 @@ public class Groups {
         if (Auth.isUserGroup(ctx)) {
             final int userId = Auth.getUserFromContext(ctx);
             final int groupId = ctx.bodyAsClass(Integer.class);
-            final Optional<de.OneManProjects.data.Group> group = Database.getGroup(groupId, userId);
+            final Optional<de.OneManProjects.data.Group> group = de.OneManProjects.database.Groups.getGroup(groupId, userId);
             if (group.isPresent()) {
-                final List<User> users = Database.getUsersInGroup(groupId);
-                final List<Project> projects = Database.getProjectsFromGroup(groupId, true);
+                final List<User> users = de.OneManProjects.database.Groups.getUsersInGroup(groupId);
+                final List<Project> projects = Projects.getProjectsFromGroup(groupId, true);
                 Responses.setResponseOrError(ctx, new GroupDetails(group.get(), users, projects));
             } else {
                 ctx.status(HttpStatus.FORBIDDEN);
@@ -113,7 +114,7 @@ public class Groups {
             final ExportFilter filter = ctx.bodyAsClass(ExportFilter.class);
             if (filter.groupId().isPresent()) {
                 final int userId = Auth.getUserFromContext(ctx);
-                final Optional<Group> group = Database.getGroup(filter.groupId().get(), userId);
+                final Optional<Group> group = de.OneManProjects.database.Groups.getGroup(filter.groupId().get(), userId);
                 if (group.isPresent()) {
                     final byte[] data = Exporter.exportGroupData(filter, group.get().getId());
                     final String fileName = getExportFilename(filter.filter(), group.get().getTitle());
@@ -148,11 +149,11 @@ public class Groups {
             final int userId = Auth.getUserFromContext(ctx);
             final DataFilter filter = ctx.bodyAsClass(DataFilter.class);
             if (filter.groupId().isPresent()) {
-                final Optional<de.OneManProjects.data.Group> group = Database.getGroup(filter.groupId().get(), userId);
+                final Optional<de.OneManProjects.data.Group> group = de.OneManProjects.database.Groups.getGroup(filter.groupId().get(), userId);
                 if (group.isPresent() && group.get().getOwner() == userId) {
-                    final List<Project> groupProjects = Database.getGroupProjects(filter.groupId().get(), true);
+                    final List<Project> groupProjects = Projects.getGroupProjects(filter.groupId().get(), true);
                     final List<Integer> groupProjectIds = groupProjects.stream().map(Project::getId).toList();
-                    final List<Tracked> tracked = Database.getGroupTrackedForRange(groupProjectIds, Instant.parse(filter.start()), Instant.parse(filter.end()));
+                    final List<Tracked> tracked = Projects.getGroupTrackedForRange(groupProjectIds, Instant.parse(filter.start()), Instant.parse(filter.end()));
                     Responses.setResponseOrError(ctx, new AnalysisData(new ArrayList<>(), groupProjects, tracked));
                 }
 
@@ -181,7 +182,7 @@ public class Groups {
         if (Auth.isUserGroup(ctx)) {
             final int userID = Auth.getUserFromContext(ctx);
             final de.OneManProjects.data.Group newGroup = ctx.bodyAsClass(de.OneManProjects.data.Group.class);
-            final boolean res = Database.addNewGroup(newGroup, userID);
+            final boolean res = de.OneManProjects.database.Groups.addNewGroup(newGroup, userID);
             Responses.setResponseOrError(ctx, res);
         } else {
             ctx.status(HttpStatus.FORBIDDEN);
@@ -207,7 +208,7 @@ public class Groups {
         if (Auth.isUserGroup(ctx)) {
             final int userID = Auth.getUserFromContext(ctx);
             final int groupId = ctx.bodyAsClass(Integer.class);
-            final boolean res = Database.deleteGroup(groupId, userID);
+            final boolean res = de.OneManProjects.database.Groups.deleteGroup(groupId, userID);
             Responses.setResponseOrError(ctx, res);
         } else {
             ctx.status(HttpStatus.FORBIDDEN);
@@ -215,7 +216,7 @@ public class Groups {
     }
 
     private static boolean canUserManageGroup(final int userID, final int groupId) throws SQLException {
-        final Optional<de.OneManProjects.data.Group> group = Database.getGroup(groupId, userID);
+        final Optional<de.OneManProjects.data.Group> group = de.OneManProjects.database.Groups.getGroup(groupId, userID);
         return group.isPresent();
     }
 
@@ -238,12 +239,12 @@ public class Groups {
         if (Auth.isUserGroup(ctx)) {
             final int userID = Auth.getUserFromContext(ctx);
             final GroupToUser groupToUser = ctx.bodyAsClass(GroupToUser.class);
-            final Optional<de.OneManProjects.data.Group> group = Database.getGroup(groupToUser.groupId(), userID);
+            final Optional<de.OneManProjects.data.Group> group = de.OneManProjects.database.Groups.getGroup(groupToUser.groupId(), userID);
             if (group.isPresent()) {
-                final Optional<Integer> id = Database.getUserID(groupToUser.mail());
+                final Optional<Integer> id = Users.getUserID(groupToUser.mail());
                 if (id.isPresent()) {
-                    final boolean res = Database.addUserToGroup(groupToUser.groupId(), id.get());
-                    final Optional<String> userMail = Database.getUserMail(id.get());
+                    final boolean res = de.OneManProjects.database.Groups.addUserToGroup(groupToUser.groupId(), id.get());
+                    final Optional<String> userMail = Users.getUserMail(id.get());
                     if (res && userMail.isPresent()) {
                         Mail.sendGroupInvite(userMail.get(), group.get().getTitle());
                         Responses.setResponseOrError(ctx, "Invite sent");
@@ -281,9 +282,9 @@ public class Groups {
             final GroupToUser groupToUser = ctx.bodyAsClass(GroupToUser.class);
             boolean res = false;
             if (canUserManageGroup(userID, groupToUser.groupId())) {
-                final Optional<Integer> id = Database.getUserID(groupToUser.mail());
+                final Optional<Integer> id = Users.getUserID(groupToUser.mail());
                 if (id.isPresent()) {
-                    res = Database.removeUserFromGroup(groupToUser.groupId(), id.get());
+                    res = de.OneManProjects.database.Groups.removeUserFromGroup(groupToUser.groupId(), id.get());
                 }
             }
             Responses.setResponseOrError(ctx, res);
@@ -313,7 +314,7 @@ public class Groups {
             final Project project = ctx.bodyAsClass(Project.class);
             boolean res = false;
             if (canUserManageGroup(userID, project.getRef())) {
-                res = Database.addGroupProject(project);
+                res = Projects.addGroupProject(project);
             }
             Responses.setResponseOrError(ctx, res);
         } else {
@@ -342,7 +343,7 @@ public class Groups {
             final de.OneManProjects.data.Group group = ctx.bodyAsClass(de.OneManProjects.data.Group.class);
             boolean res = false;
             if (canUserManageGroup(userID, group.getId())) {
-                res = Database.updateGroup(group, userID);
+                res = de.OneManProjects.database.Groups.updateGroup(group, userID);
             }
             Responses.setResponseOrError(ctx, res);
         } else {
@@ -371,7 +372,7 @@ public class Groups {
             final IdTupel tuple = ctx.bodyAsClass(IdTupel.class);
             boolean res = false;
             if (canUserManageGroup(userID, tuple.id1())) {
-                res = Database.deleteProject(tuple.id2(), tuple.id1());
+                res = Projects.deleteProject(tuple.id2(), tuple.id1());
             }
             Responses.setResponseOrError(ctx, res);
         } else {
@@ -392,7 +393,7 @@ public class Groups {
     public static void getManagedGroups(final Context ctx) throws SQLException {
         if (Auth.isUserGroup(ctx)) {
             final int userId = Auth.getUserFromContext(ctx);
-            final List<de.OneManProjects.data.Group> groups = Database.getManagedGroups(userId);
+            final List<de.OneManProjects.data.Group> groups = de.OneManProjects.database.Groups.getManagedGroups(userId);
             Responses.setResponseOrError(ctx, groups);
         } else {
             ctx.status(HttpStatus.FORBIDDEN);
@@ -416,7 +417,7 @@ public class Groups {
     public static void userLeaveGroup(final Context ctx) throws SQLException {
         final int groupId = ctx.bodyAsClass(Integer.class);
         final int userId = Auth.getUserFromContext(ctx);
-        final boolean res = Database.leaveGroup(userId, groupId);
+        final boolean res = de.OneManProjects.database.Groups.leaveGroup(userId, groupId);
         Responses.setResponseOrError(ctx, res);
     }
 }

@@ -32,9 +32,10 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import de.OneManProjects.Database;
 import de.OneManProjects.data.dto.Login;
 import de.OneManProjects.data.enums.Role;
+import de.OneManProjects.database.Tokens;
+import de.OneManProjects.database.Users;
 import io.javalin.http.Context;
 import io.javalin.http.Cookie;
 import io.javalin.http.HttpStatus;
@@ -101,7 +102,7 @@ public class Auth {
     }
 
     public static boolean login(final Login login) throws SQLException {
-        final Optional<String> optionalString = Database.getUserHash(login.mail());
+        final Optional<String> optionalString = Users.getUserHash(login.mail());
         return optionalString.filter(s ->
                 BCrypt.verifyer()
                     .verify(login.password().toCharArray(), s)
@@ -118,7 +119,7 @@ public class Auth {
 
     public static String genRefreshToken(final int user) throws SQLException {
         final String refreshToken = UUID.randomUUID().toString();
-        Database.addRefreshToken(user, refreshToken);
+        Tokens.addRefreshToken(user, refreshToken);
         return refreshToken;
     }
 
@@ -130,7 +131,7 @@ public class Auth {
             final String apiToken = ctx.header("Authorization");
             if (apiToken != null) {
                 try {
-                    final Optional<UserToken> token = Database.getToken(apiToken.replace("Bearer ", ""));
+                    final Optional<UserToken> token = Tokens.getToken(apiToken.replace("Bearer ", ""));
                     if (token.isPresent()) {
                         if (token.get().expiration().isPresent()) {
                             final Timestamp currentTimeStamp = Timestamp.from(Instant.now());
@@ -147,7 +148,7 @@ public class Auth {
     }
 
     public static Optional<Integer> validateRefreshToken(final String refreshToken) throws SQLException {
-        final Optional<UserToken> dbToken = Database.getToken(refreshToken);
+        final Optional<UserToken> dbToken = Tokens.getToken(refreshToken);
         if (dbToken.isPresent()) {
             if (dbToken.get().tokentype().equals(TokenType.REFRESH_TOKEN) && dbToken.get().expiration().isPresent()) {
                 final Timestamp currentTimeStamp = Timestamp.from(Instant.now());
@@ -170,7 +171,7 @@ public class Auth {
             final String apiToken = ctx.header("Authorization");
             if (apiToken != null) {
                 try {
-                    final Optional<UserToken> token = Database.getToken(apiToken.replace("Bearer ", ""));
+                    final Optional<UserToken> token = Tokens.getToken(apiToken.replace("Bearer ", ""));
                     if (token.isPresent()) {
                         return token.get().user();
                     }
@@ -186,13 +187,13 @@ public class Auth {
 
     public static boolean isUserAdmin(final Context ctx) throws SQLException {
         final int userId = getUserFromContext(ctx);
-        final List<Role> roles = Database.getUserRoles(userId);
+        final List<Role> roles = Users.getUserRoles(userId);
         return roles.contains(Role.ADMIN);
     }
 
     public static boolean isUserGroup(final Context ctx) throws SQLException {
         final int userId = getUserFromContext(ctx);
-        final List<Role> roles = Database.getUserRoles(userId);
+        final List<Role> roles = Users.getUserRoles(userId);
         return roles.contains(Role.GROUP) || roles.contains(Role.ADMIN);
     }
 
@@ -201,7 +202,7 @@ public class Auth {
         for (int i = 0; i < 50; i++) {
             try {
                 // Check if the UUID already exists in the database
-                if (Database.getToken(uuid.toString()).isEmpty()) {
+                if (Tokens.getToken(uuid.toString()).isEmpty()) {
                     return uuid.toString();
                 }
             } catch (final SQLException e) {
