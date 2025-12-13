@@ -74,7 +74,7 @@ export const Profile = (): ReactElement => {
 
     const onArchive = async (e: React.MouseEvent, id: number, archive: boolean): Promise<void> => {
         e.stopPropagation();
-        const archiveString = archive ? "Do you want to unarchive the project?" : 
+        const archiveString = !archive ? "Do you want to unarchive the project?" : 
             "Do you want to archive this project?\n" +
             "Archived projects wont be visible in the project list.\n" +
             "You can unarchive them at any time.";
