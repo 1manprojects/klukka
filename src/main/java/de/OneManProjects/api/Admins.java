@@ -26,10 +26,12 @@ package de.OneManProjects.api;
  * #L%
  */
 
-import de.OneManProjects.Database;
 import de.OneManProjects.data.User;
 import de.OneManProjects.data.dto.AdminData;
 import de.OneManProjects.data.dto.PrivacyInfo;
+import de.OneManProjects.database.Groups;
+import de.OneManProjects.database.Projects;
+import de.OneManProjects.database.Users;
 import de.OneManProjects.mail.Mail;
 import de.OneManProjects.security.Auth;
 import io.javalin.http.Context;
@@ -67,7 +69,7 @@ public class Admins {
     public static void adminUpdateRoles(final Context ctx) throws SQLException {
         if (Auth.isUserAdmin(ctx)) {
             final User user = ctx.bodyAsClass(User.class);
-            final boolean res = Database.updateUserRole(user.id(), user.roles());
+            final boolean res = Users.updateUserRole(user.id(), user.roles());
             Responses.setResponseOrError(ctx, res);
         } else {
             ctx.status(HttpStatus.FORBIDDEN);
@@ -93,7 +95,7 @@ public class Admins {
         if (Auth.isUserAdmin(ctx)) {
             final User newUser = ctx.bodyAsClass(User.class);
             final String p = Auth.createRandomPassword();
-            final boolean res = Database.addNewUser(newUser, p);
+            final boolean res = Users.addNewUser(newUser, p);
             if (res) {
                 Mail.sendInvite(newUser.mail(), p);
             }
@@ -121,8 +123,8 @@ public class Admins {
     public static void adminDeleteUser(final Context ctx) throws SQLException {
         if (Auth.isUserAdmin(ctx)) {
             final int userToDel = ctx.bodyAsClass(Integer.class);
-            final boolean res1 = Database.deleteUser(userToDel);
-            final boolean res2 = Database.deleteAllUserProjects(userToDel);
+            final boolean res1 = Users.deleteUser(userToDel);
+            final boolean res2 = Projects.deleteAllUserProjects(userToDel);
             Responses.setResponseOrError(ctx, res1 && res2);
         }
         else {
@@ -142,7 +144,7 @@ public class Admins {
     )
     public static void getAdminData(final Context ctx) throws SQLException {
         if (Auth.isUserAdmin(ctx)) {
-            Responses.setResponseOrError(ctx, Optional.of(new AdminData(Database.getAllUsers(), Database.getAllGroups(), new ArrayList<>())), false);
+            Responses.setResponseOrError(ctx, Optional.of(new AdminData(Users.getAllUsers(), Groups.getAllGroups(), new ArrayList<>())), false);
         } else {
             ctx.status(HttpStatus.FORBIDDEN);
         }

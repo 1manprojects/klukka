@@ -23,6 +23,9 @@
  * THE SOFTWARE.
  * #L%
  */
+import de.OneManProjects.database.Database;
+import de.OneManProjects.database.Tokens;
+import de.OneManProjects.database.Users;
 import de.OneManProjects.security.Auth;
 import de.OneManProjects.security.TokenType;
 import de.OneManProjects.data.dto.Login;
@@ -31,13 +34,13 @@ import de.OneManProjects.security.UserToken;
 import io.javalin.http.Context;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 public class AuthTests {
@@ -55,8 +58,8 @@ public class AuthTests {
         final Login login = new Login("user@mail.com", "password");
         final String hash = Auth.hashPassword("password");
 
-        try (final MockedStatic<de.OneManProjects.Database> dbMock = mockStatic(de.OneManProjects.Database.class)) {
-            dbMock.when(() -> de.OneManProjects.Database.getUserHash("user@mail.com"))
+        try (final MockedStatic<Database> dbMock = mockStatic(Database.class)) {
+            dbMock.when(() -> Users.getUserHash("user@mail.com"))
                   .thenReturn(Optional.of(hash));
             assertTrue(Auth.login(login));
         }
@@ -67,8 +70,8 @@ public class AuthTests {
         final Login login = new Login("user@mail.com", "wrongpassword");
         final String hash = Auth.hashPassword("password");
 
-        try (final MockedStatic<de.OneManProjects.Database> dbMock = mockStatic(de.OneManProjects.Database.class)) {
-            dbMock.when(() -> de.OneManProjects.Database.getUserHash("user@mail.com"))
+        try (final MockedStatic<Database> dbMock = mockStatic(Database.class)) {
+            dbMock.when(() -> Users.getUserHash("user@mail.com"))
                   .thenReturn(Optional.of(hash));
             assertFalse(Auth.login(login));
         }
@@ -100,8 +103,8 @@ public class AuthTests {
         when(ctx.header("Authorization")).thenReturn("Bearer testToken");
 
         final UserToken token = new UserToken("testToken", 0, Optional.empty(), TokenType.API_TOKEN, "testing");
-        try (final MockedStatic<de.OneManProjects.Database> dbMock = mockStatic(de.OneManProjects.Database.class)) {
-            dbMock.when(() -> de.OneManProjects.Database.getToken("testToken"))
+        try (final MockedStatic<Database> dbMock = mockStatic(Database.class)) {
+            dbMock.when(() -> Tokens.getToken("testToken"))
                   .thenReturn(Optional.of(token));
             assertTrue(Auth.validateToken(ctx));
         }
@@ -125,8 +128,8 @@ public class AuthTests {
         when(ctx.header("Authorization")).thenReturn("Bearer testToken");
 
         final UserToken token = new UserToken("", 99, Optional.empty(), TokenType.API_TOKEN, "testing");
-        try (final MockedStatic<de.OneManProjects.Database> dbMock = mockStatic(de.OneManProjects.Database.class)) {
-            dbMock.when(() -> de.OneManProjects.Database.getToken("testToken"))
+        try (final MockedStatic<Database> dbMock = mockStatic(Database.class)) {
+            dbMock.when(() -> Tokens.getToken("testToken"))
                   .thenReturn(Optional.of(token));
             final int userId = Auth.getUserFromContext(ctx);
             assertEquals(99, userId);
@@ -140,8 +143,8 @@ public class AuthTests {
         when(ctx.cookieMap()).thenReturn(java.util.Map.of("jwt", "dummy"));
         when(ctx.cookie("jwt")).thenReturn(jwt);
 
-        try (final MockedStatic<de.OneManProjects.Database> dbMock = mockStatic(de.OneManProjects.Database.class)) {
-            dbMock.when(() -> de.OneManProjects.Database.getUserRoles(1))
+        try (final MockedStatic<Database> dbMock = mockStatic(Database.class)) {
+            dbMock.when(() -> Users.getUserRoles(1))
                   .thenReturn(List.of(Role.ADMIN, Role.USER));
             assertTrue(Auth.isUserAdmin(ctx));
         }
@@ -154,8 +157,8 @@ public class AuthTests {
         when(ctx.cookieMap()).thenReturn(java.util.Map.of("jwt", "dummy"));
         when(ctx.cookie("jwt")).thenReturn(jwt);
 
-        try (final MockedStatic<de.OneManProjects.Database> dbMock = mockStatic(de.OneManProjects.Database.class)) {
-            dbMock.when(() -> de.OneManProjects.Database.getUserRoles(2))
+        try (final MockedStatic<Database> dbMock = mockStatic(Database.class)) {
+            dbMock.when(() -> Users.getUserRoles(2))
                   .thenReturn(List.of(Role.GROUP));
             assertTrue(Auth.isUserGroup(ctx));
         }
@@ -163,10 +166,13 @@ public class AuthTests {
 
     @Test
     void testGenerateApiToken() {
-        try (final MockedStatic<de.OneManProjects.Database> dbMock = mockStatic(de.OneManProjects.Database.class)) {
-            dbMock.when(() -> de.OneManProjects.Database.getToken(anyString()))
-                  .thenReturn(Optional.empty());
+        try (final MockedStatic<Tokens> tokensMock = mockStatic(Tokens.class)) {
+            // Mock any input token to return empty
+            tokensMock.when(() -> Tokens.getToken(Mockito.any()))
+                    .thenAnswer(invocation -> Optional.empty());
+
             final String token = Auth.generateApiToken();
+
             assertNotNull(token);
             assertFalse(token.isEmpty());
         }

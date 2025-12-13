@@ -34,10 +34,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import de.OneManProjects.Database;
 import de.OneManProjects.data.Project;
 import de.OneManProjects.data.Tracked;
 import de.OneManProjects.data.dto.ExportFilter;
+import de.OneManProjects.database.Projects;
+import de.OneManProjects.database.Users;
 
 public class Exporter {
 
@@ -104,7 +105,7 @@ public class Exporter {
             final Optional<Project> g = groupProjects.stream().filter(project -> project.getId() == trackedItem.getProjectId()).findFirst();
             Optional<String> user;
             try {
-                user = Database.getUserMail(trackedItem.getUser());
+                user = Users.getUserMail(trackedItem.getUser());
             } catch (final SQLException e) {
                 user = Optional.empty();
             }
@@ -149,9 +150,9 @@ public class Exporter {
     }
 
     public static byte[] exportUserData(final ExportFilter filter, final int userId) throws SQLException {
-        final List<Project> userProjects = Database.getProjects(userId, true);
-        final List<Project> groupProjects = Database.getUserGroupProjects(userId);
-        final List<Tracked> tracked = Database.getTrackedForRange(userId, Instant.parse(filter.filter().start()), Instant.parse(filter.filter().end()));
+        final List<Project> userProjects = Projects.getProjects(userId, true);
+        final List<Project> groupProjects = Projects.getUserGroupProjects(userId);
+        final List<Tracked> tracked = Projects.getTrackedForRange(userId, Instant.parse(filter.filter().start()), Instant.parse(filter.filter().end()));
         if (filter.detailed()) {
             return exportDetailedCsv(tracked, userProjects, groupProjects);
         } else {
@@ -160,9 +161,9 @@ public class Exporter {
     }
 
     public static byte[] exportGroupData(final ExportFilter filter, final int groupId) throws SQLException {
-        final List<Project> groupProjects = Database.getGroupProjects(groupId, true);
+        final List<Project> groupProjects = Projects.getGroupProjects(groupId, true);
         final List<Integer> groupProjectIds = groupProjects.stream().map(Project::getId).toList();
-        final List<Tracked> tracked = Database.getGroupTrackedForRange(groupProjectIds, Instant.parse(filter.filter().start()), Instant.parse(filter.filter().end()));
+        final List<Tracked> tracked = Projects.getGroupTrackedForRange(groupProjectIds, Instant.parse(filter.filter().start()), Instant.parse(filter.filter().end()));
         if (filter.detailed()) {
             return exportDetailedCsvforGroup(tracked, groupProjects);
         } else {

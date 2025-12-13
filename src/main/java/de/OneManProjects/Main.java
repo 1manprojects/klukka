@@ -34,6 +34,8 @@ import de.OneManProjects.api.Groups;
 import de.OneManProjects.api.Responses;
 import de.OneManProjects.api.Users;
 import de.OneManProjects.data.dto.*;
+import de.OneManProjects.database.Database;
+import de.OneManProjects.database.Tokens;
 import de.OneManProjects.mail.Mail;
 import de.OneManProjects.security.Auth;
 import de.OneManProjects.security.UserToken;
@@ -226,7 +228,7 @@ public class Main {
         final String refreshToken = ctx.cookie("refresh");
         final Optional<Integer> userID = Auth.validateRefreshToken(refreshToken);
         if (userID.isPresent()) {
-            Database.deleteToken(refreshToken, userID.get());
+            Tokens.deleteToken(refreshToken, userID.get());
             Auth.setCookies(ctx, userID.get());
             final Response response = new Response(true);
             ctx.json(response);
@@ -249,7 +251,7 @@ public class Main {
         final int userId = Auth.getUserFromContext(ctx);
         ctx.removeCookie("jwt", "/api");
         ctx.removeCookie("refresh", "/api");
-        Database.deleteAllRefreshTokensForUser(userId);
+        Tokens.deleteAllRefreshTokensForUser(userId);
         ctx.status(200).result("Logged out");
     }
 
@@ -272,7 +274,7 @@ public class Main {
     private static void login(final Context ctx) throws SQLException {
         final Login login = ctx.bodyAsClass(Login.class);
         if (Auth.login(login)) {
-            final Optional<Integer> userID = Database.getUserID(login.mail());
+            final Optional<Integer> userID = de.OneManProjects.database.Users.getUserID(login.mail());
             if (userID.isPresent()) {
                 Auth.setCookies(ctx, userID.get());
                 final Response response = new Response(true);
@@ -303,10 +305,10 @@ public class Main {
     )
     private static void sendResetPasswordLink(final Context ctx) throws SQLException, MessagingException, IOException {
         final String mail = ctx.bodyAsClass(String.class);
-        final Optional<Integer> userId = Database.getUserID(mail);
+        final Optional<Integer> userId = de.OneManProjects.database.Users.getUserID(mail);
         if (userId.isPresent()) {
             final String token = UUID.randomUUID().toString();
-            final boolean result = Database.resetPasswordToken(token, userId.get());
+            final boolean result = Tokens.resetPasswordToken(token, userId.get());
             Mail.sendPasswordReset(mail, token);
             Responses.setResponseOrError(ctx, result);
         }
@@ -330,7 +332,7 @@ public class Main {
     )
     private static void validToken(final Context ctx) throws SQLException {
         final String token = ctx.bodyAsClass(String.class);
-        final Optional<UserToken> userToken = Database.getToken(token);
+        final Optional<UserToken> userToken = Tokens.getToken(token);
         if (userToken.isPresent()) {
             Responses.setResponseOrError(ctx, true);
         } else {
@@ -356,11 +358,11 @@ public class Main {
     )
     private static void resetPasswordByToken(final Context ctx) throws SQLException {
         final PasswordReset reset = ctx.bodyAsClass(PasswordReset.class);
-        final Optional<UserToken> userToken = Database.getToken(reset.token());
+        final Optional<UserToken> userToken = Tokens.getToken(reset.token());
         if (userToken.isPresent() && userToken.get().expiration().isPresent() && userToken.get().expiration().get().after(Timestamp.from(Instant.now()))) {
-            final Optional<String> userMail = Database.getUserMail(userToken.get().user());
+            final Optional<String> userMail = de.OneManProjects.database.Users.getUserMail(userToken.get().user());
             if (userMail.isPresent()) {
-                final boolean res = Database.updatePassword(userToken.get().user(), Auth.hashPassword(reset.newPassword()));
+                final boolean res = de.OneManProjects.database.Users.updatePassword(userToken.get().user(), Auth.hashPassword(reset.newPassword()));
                 Responses.setResponseOrError(ctx, res);
             } else {
                 ctx.status(HttpStatus.NOT_FOUND);
