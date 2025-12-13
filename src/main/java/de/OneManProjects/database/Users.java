@@ -91,7 +91,7 @@ public class Users {
                 return Database.executeUpdate(
                         "INSERT INTO " + Database.ROLE_TABLE + "(idUser, roleType) VALUES(?,?)",
                         userId,
-                        role
+                        role.name()
                 ) > 0;
             } catch (final SQLException e) {
                 throw new RuntimeException(e);
@@ -113,7 +113,7 @@ public class Users {
                 return Database.executeUpdate(
                         "DELETE FROM " + Database.ROLE_TABLE + " WHERE idUser = ? and roleType = ?",
                         userId,
-                        role
+                        role.name()
                 ) > 0;
             } catch (final SQLException e) {
                 throw new RuntimeException(e);
@@ -128,7 +128,7 @@ public class Users {
                 return Database.executeUpdate(
                         "INSERT INTO " + Database.ROLE_TABLE + " (user,roleType) VALUES(?,?)",
                         userId,
-                        role
+                        role.name()
                 ) > 0;
             } catch (final SQLException e) {
                 throw new RuntimeException(e);
