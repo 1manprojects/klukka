@@ -126,7 +126,7 @@ public class Users {
         {
             try {
                 return Database.executeUpdate(
-                        "INSERT INTO " + Database.ROLE_TABLE + " (user,roleType) VALUES(?,?)",
+                        "INSERT INTO " + Database.ROLE_TABLE + " (idUser, roleType) VALUES(?,?)",
                         userId,
                         role.name()
                 ) > 0;
