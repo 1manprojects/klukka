@@ -57,9 +57,21 @@ public class Auth {
     public final static int JWT_LIFETIME_SEC = 3600 * 5;
     public final static int REFRESH_LIFETIME_SEC = 7 * 24 * 3600;
 
+    private static final Algorithm ALGORITHM = Algorithm.HMAC256(generateSecretKey());
+
+    private static String generateSecretKey() {
+        final int size = 50;
+        final char[] ALL_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789^$*.[]{}()?-\"!@#%&/\\,><':;|_~`".toCharArray();
+        final Random rand = new SecureRandom();
+        final char[] key = new char[size];
+        for (int i = 0; i < size; i++) {
+            key[i] = ALL_CHARS[rand.nextInt(ALL_CHARS.length)];
+        }
+        return new String(key);
+    }
+
     private static Algorithm getAlgorithm() {
-        //For testing only should create one at startup new
-        return Algorithm.HMAC256("ofrqR3H0VG^xIZLnfYtP8WNn968n8@uX3xfZd%EA1S0Z@1");
+        return ALGORITHM;
     }
 
     private static Optional<DecodedJWT> validateAndDecodeToken(final String token) {
