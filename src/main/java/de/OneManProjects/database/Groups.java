@@ -87,6 +87,13 @@ public class Groups {
         ) > 0;
     }
 
+    public static boolean deleteGroup(final int groupId) throws SQLException {
+        return Database.executeUpdate(
+                "DELETE FROM "+ Database.GROUP_TABLE +" WHERE id = ?",
+                groupId
+        ) > 0;
+    }
+
     public static boolean addUserToGroup(final int groupId, final int userId) throws SQLException {
         return Database.executeUpdate(
                 "INSERT INTO "+ Database.GROUP_REF_TABLE +" (idUser,groupId) VALUES(?,?)",

@@ -196,6 +196,7 @@ public class Main {
         app.post("api/admin/invite", ctx -> runAction(ctx, Admins::adminAddNewUser, true));
         app.post("api/admin/updateRole", ctx -> runAction(ctx, Admins::adminUpdateRoles, true));
         app.post("api/admin/deleteUser", ctx -> runAction(ctx, Admins::adminDeleteUser, true));
+        app.post("api/admin/deleteGroup", ctx -> runAction(ctx, Admins::adminDeleteGroup, true));
         app.post("api/admin/setPrivacy", ctx -> runAction(ctx, Admins::setPrivacyHtml, true));
         app.get("api/admin", ctx -> runAction(ctx, Admins::getAdminData, true));
 
