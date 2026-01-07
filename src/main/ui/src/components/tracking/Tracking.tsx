@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  * #L%
  */
-import { Fragment, ReactElement, useEffect, useState } from "react";
+import { Fragment, ReactElement, useEffect, useState, useRef } from "react";
 
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -32,8 +32,8 @@ import './tracking.scss'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleStop } from "@fortawesome/free-solid-svg-icons";
 import { Tracked } from "../../datatypes/final";
-import { convertUtcToLocalDate, convertUtcToLocalTime } from "../../Func";
-import { getActive } from "../../Api";
+import { convertUtcToLocalDate, convertUtcToLocalTime, showToast } from "../../Func";
+import { getActive, updateComment } from "../../Api";
 
 export interface TrackingProps {
     tracking: Tracked | null;
@@ -58,6 +58,7 @@ export const Tracking = (props: TrackingProps): ReactElement => {
     const [duration, setDuration] = useState<string>("00:00");
     const [seconds, setSeconds] = useState<number>(getStartSeconds());
     const [isHover, setIsHover] = useState(false);
+    const [newComment, setNewComment] = useState<string>(props.tracking? props.tracking.comment : "");
 
     const handleMouseEnter = (): void => {
         setIsHover(true);
@@ -113,8 +114,13 @@ export const Tracking = (props: TrackingProps): ReactElement => {
         };
     }, [])
 
-    const stop = (): void => {
-        props.onStop();
+    const stop = async (): Promise<void> => {
+        if (props.tracking && saveTimeout.current) {
+            window.clearTimeout(saveTimeout.current);
+            saveTimeout.current = undefined;
+            await setComment(props.tracking.id, newComment);
+        }
+        await props.onStop();
     }
 
     const getStartTime = (): ReactElement => {
@@ -123,6 +129,30 @@ export const Tracking = (props: TrackingProps): ReactElement => {
             <span className="date">{props.tracking? convertUtcToLocalDate(props.tracking.start, props.tracking.timezone): "-"}</span>
         </Fragment>
     }
+
+    const setComment = async(id: number, comment: string): Promise<void> => {
+        const res = await updateComment(id, comment);
+        showToast(res, "Comment saved", "Error updating comment");
+    }
+
+    const saveTimeout = useRef<number | undefined>(undefined);
+
+    useEffect(() => {
+        if (!props.tracking) return;
+        if (saveTimeout.current) {
+            window.clearTimeout(saveTimeout.current);
+        }
+        saveTimeout.current = window.setTimeout(() => {
+            setComment(props.tracking!.id, newComment);
+        }, 2000);
+
+        return (): void => {
+            if (saveTimeout.current) {
+                window.clearTimeout(saveTimeout.current);
+                saveTimeout.current = undefined;
+            }
+        };
+    }, [newComment, props.tracking?.id]);
 
 
     return <div className="tracked">
@@ -139,5 +169,8 @@ export const Tracking = (props: TrackingProps): ReactElement => {
                     <FontAwesomeIcon className={"stop-icon" + (isHover? " stop": "")} icon={faCircleStop} />
             </div>
         </CircularProgressbarWithChildren >
+        <div className="comment">
+            <textarea onChange={(e) => setNewComment(e.target.value)} value={newComment} placeholder="Details about your work..." />
+        </div>
     </div>
 }

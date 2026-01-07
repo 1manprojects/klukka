@@ -1,5 +1,31 @@
 package de.OneManProjects.database;
 
+/*-
+ * #%L
+ * Klukka
+ * %%
+ * Copyright (C) 2025 - 2026 Nikolai Reed reed@1manprojects.de
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import de.OneManProjects.data.Group;
 import de.OneManProjects.data.Project;
 import de.OneManProjects.data.Tracked;
@@ -265,13 +291,14 @@ public class Projects {
 
     public static int addTracking(final Tracked tracked) throws SQLException {
         return Database.executeInsertReturningId(
-                "INSERT INTO "+ Database.TRACKING_TABLE +" (project, idUser, start_time, end_time, timezone, active) VALUES(?,?,?,?,?,?)",
+                "INSERT INTO "+ Database.TRACKING_TABLE +" (project, idUser, start_time, end_time, timezone, active, comment) VALUES(?,?,?,?,?,?,?)",
                 tracked.getProjectId(),
                 tracked.getUser(),
                 tracked.getStart(),
                 tracked.getEnd(),
                 tracked.getTimezone(),
-                tracked.isActive()
+                tracked.isActive(),
+                tracked.getComment()
         );
     }
 
@@ -291,16 +318,28 @@ public class Projects {
         }
         return Database.executeUpdate(
                 "UPDATE "+ Database.TRACKING_TABLE +" SET start_time = ?," +
-                        "end_time = ?, timezone = ?, active = ?, project = ? WHERE id = ? AND idUser = ?",
+                        "end_time = ?, timezone = ?, active = ?, project = ?, comment = ? WHERE id = ? AND idUser = ?",
                 tracked.getStart(),
                 tracked.getEnd(),
                 tracked.getTimezone(),
                 tracked.isActive(),
                 tracked.getProjectId(),
+                tracked.getComment(),
                 tracked.getId(),
                 userId
         ) > 0;
     }
+
+    public static boolean updateComment(final int trackingId, final int userId, final String updatedComment) throws SQLException {
+        return Database.executeUpdate(
+                "UPDATE "+ Database.TRACKING_TABLE +" SET comment = ? " +
+                        "WHERE id = ? AND idUser = ?",
+                updatedComment,
+                trackingId,
+                userId
+        ) > 0;
+    }
+
 
     private static Tracked parseTracked(final ResultSet rs) throws SQLException {
         return new Tracked(rs.getInt("id"),
@@ -309,6 +348,8 @@ public class Projects {
                 rs.getTimestamp("start_time"),
                 rs.getTimestamp("end_time"),
                 rs.getString("timezone"),
-                rs.getBoolean("active"));
+                rs.getBoolean("active"),
+                rs.getString("comment")
+        );
     }
 }

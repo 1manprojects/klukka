@@ -26,8 +26,8 @@
 import { AnalysisData, Tracked } from "./datatypes/final";
 import { AdminData, Login, Project, Role, Start, User, UserProjects, Group, GroupDetails, GroupToUser, IdTupel, DataFilter, ExportFilter, UserData, PasswordReset, ArchiveId, Response as R, UserApiToken, DepInfo, PrivacyInfo } from "./datatypes/types";
 
-//const BASE_URL = import.meta.env.VITE_BASE_URL as string;
-const BASE_URL = `${window.location.origin}/api/`;
+const BASE_URL = import.meta.env.VITE_BASE_URL as string;
+//const BASE_URL = `${window.location.origin}/api/`;
 
 interface BinaryResponse {
     blob: Blob;
@@ -230,6 +230,11 @@ export const getActive = async (): Promise<Tracked | null> => {
     return returnOrNull<Tracked>(res)
 }
 
+export const updateComment = async(id: number, comment: string): Promise<boolean> => {
+    const res = await runPost("comment", {id: id, comment: comment});
+    return returnOrDefault<boolean>(res, false);
+}
+
 export const startTracking = async (start: Start): Promise<boolean> => {
     const res = await runPost("start", start);
     return returnOrDefault<boolean>(res, false);
@@ -256,6 +261,11 @@ export const adminInvite = async (user: User): Promise<boolean> => {
 }
 
 export const adminDelUser = async (id: number): Promise<boolean> => {
+    const res = await runPost("admin/deleteUser", id)
+    return returnOrDefault<boolean>(res, false);
+}
+
+export const adminDelGroup = async (id: number): Promise<boolean> => {
     const res = await runPost("admin/deleteUser", id)
     return returnOrDefault<boolean>(res, false);
 }

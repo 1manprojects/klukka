@@ -167,6 +167,14 @@ export const EditEvent = (props: EditEventProps): ReactElement => {
                 style={{ width: '100%' }} // Full width for mobile
             />
          </div>
+         <div className="comments">
+            <h3>Comment</h3>
+            <textarea 
+                value={event.comment} 
+                onChange={(e) => setEvent({...event, comment: e.target.value})} 
+                placeholder="Details about your work ..."
+            />
+        </div>
          <div className="buttons">
             <button className="delete" onClick={() => props.onDelete(event)}>Delete</button>
             <button 
