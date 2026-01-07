@@ -94,8 +94,15 @@ export const Admin = (): ReactElement => {
         }
     }
 
-    const deleteUser = async(id :number): Promise<void> => {
+    const deleteUser = async(id: number): Promise<void> => {
         if (window.confirm("This will delete the User and all his Data from the Server!\nWarning this cannot be undone!")) {
+            await adminDelUser(id)
+            fetchAndSetData();
+        }
+    }
+
+    const deleteGroup = async(id: number): Promise<void> => {
+        if (window.confirm("This will delete the Group and all Data from the Server!\nWarning this cannot be undone!")) {
             await adminDelUser(id)
             fetchAndSetData();
         }
@@ -204,7 +211,7 @@ export const Admin = (): ReactElement => {
                     <td>{g.title}</td>
                     <td>{g.description}</td>
                     <td>{users.find(u => u.id === g.owner)?.mail}</td>
-                    <td><FontAwesomeIcon icon={faTrashAlt}/></td>
+                    <td onClick={()=>deleteGroup(g.id)}><FontAwesomeIcon icon={faTrashAlt}/></td>
                 </tr>)}
                 <tr>
                     <td>new</td>

@@ -133,6 +133,32 @@ public class Admins {
     }
 
     @OpenApi(
+            summary = "Delete Group",
+            operationId = "admin deleteGroup",
+            path = "/api/admin/deleteGroup",
+            methods = HttpMethod.POST,
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Integer.class)},
+                    description = "Group ID to delete",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class, example = "true")),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
+    )
+    public static void adminDeleteGroup(final Context ctx) throws SQLException {
+        if (Auth.isUserAdmin(ctx)) {
+            final int groupToDelete = ctx.bodyAsClass(Integer.class);
+            final boolean res1 = Groups.deleteGroup(groupToDelete);
+            Responses.setResponseOrError(ctx, res1);
+        }
+        else {
+            ctx.status(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @OpenApi(
         summary = "Get Admin Data",
         operationId = "admin getAdminData",
         path = "/api/admin/data",
