@@ -26,8 +26,8 @@
 import { AnalysisData, Tracked } from "./datatypes/final";
 import { AdminData, Login, Project, Role, Start, User, UserProjects, Group, GroupDetails, GroupToUser, IdTupel, DataFilter, ExportFilter, UserData, PasswordReset, ArchiveId, Response as R, UserApiToken, DepInfo, PrivacyInfo } from "./datatypes/types";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL as string;
-//const BASE_URL = `${window.location.origin}/api/`;
+//const BASE_URL = import.meta.env.VITE_BASE_URL as string;
+const BASE_URL = `${window.location.origin}/api/`;
 
 interface BinaryResponse {
     blob: Blob;
