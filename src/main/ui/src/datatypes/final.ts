@@ -33,6 +33,7 @@ export interface Tracked {
     end: string;
     timezone: string;
     active: boolean;
+    comment: string;
 }
 
 export interface AnalysisData {

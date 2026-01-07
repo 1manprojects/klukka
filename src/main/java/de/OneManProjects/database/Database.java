@@ -171,6 +171,9 @@ public class Database {
                 "description TEXT," +
                 "expiration TIMESTAMP" +
                 ")";
+        final String addCommentColumn =
+                "ALTER TABLE " + TRACKING_TABLE +
+                        " ADD COLUMN IF NOT EXISTS comment TEXT";
         try(final Connection con = getConnection()) {
             try(final Statement st = con.createStatement()) {
                 st.execute(createUserTable);
@@ -180,6 +183,7 @@ public class Database {
                 st.execute(createProjectTable);
                 st.execute(createTrackedTable);
                 st.execute(createTokenTable);
+                st.execute(addCommentColumn);
             }
         }
         setAdminIfNotExists();

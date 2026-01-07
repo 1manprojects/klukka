@@ -35,8 +35,9 @@ public class Tracked {
     private final Timestamp end;
     private final String timezone;
     private final boolean isActive;
+    private String comment;
 
-    public Tracked(int id, int user, int projectId, Timestamp start, Timestamp end, String timezone) {
+    public Tracked(final int id, final int user, final int projectId, final Timestamp start, final Timestamp end, final String timezone, final String comment) {
         this.id = id;
         this.user = user;
         this.projectId = projectId;
@@ -44,9 +45,10 @@ public class Tracked {
         this.end = end;
         this.isActive = false;
         this.timezone = timezone;
+        this.comment = comment;
     }
 
-    public Tracked(int id, int user, int projectId, Timestamp start, Timestamp end, String timezone, boolean active) {
+    public Tracked(final int id, final int user, final int projectId, final Timestamp start, final Timestamp end, final String timezone, final boolean active, final String comment) {
         this.id = id;
         this.user = user;
         this.projectId = projectId;
@@ -54,9 +56,10 @@ public class Tracked {
         this.end = end;
         this.isActive = active;
         this.timezone = timezone;
+        this.comment = comment;
     }
 
-    public Tracked(int id, int user, int projectId, Timestamp start, String timezone) {
+    public Tracked(final int id, final int user, final int projectId, final Timestamp start, final String timezone) {
         this.id = id;
         this.user = user;
         this.projectId = projectId;
@@ -64,6 +67,7 @@ public class Tracked {
         this.end = null;
         this.isActive = true;
         this.timezone = timezone;
+        this.comment = "";
     }
 
     public int getUser() {
@@ -94,7 +98,15 @@ public class Tracked {
         return timezone;
     }
 
-    public void overrideUser(int user) {
+    public void overrideUser(final int user) {
         this.user = user;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(final String newComment) {
+        this.comment = comment;
     }
 }

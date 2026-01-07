@@ -169,6 +169,7 @@ public class Main {
         app.post("api/update", ctx -> runAction(ctx, Users::updateTracking, true));
         app.post("api/export", ctx -> runAction(ctx, Users::exportData, true));
         app.post("api/archive", ctx -> runAction(ctx, Users::archiveProject, true));
+        app.post("api/comment", ctx -> runAction(ctx, Users::updateComment, true));
         app.post("api/user/updatePassword", ctx -> runAction(ctx, Users::updatePassword, true));
         app.post("api/user/changeMail", ctx -> runAction(ctx, Users::updateUserMail, true));
         app.post("api/user/createToken", ctx -> runAction(ctx, Users::createUserApiToken, true));

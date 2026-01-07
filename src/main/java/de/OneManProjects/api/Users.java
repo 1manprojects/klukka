@@ -262,6 +262,28 @@ public class Users {
     }
 
     @OpenApi(
+            summary = "Update Comment",
+            operationId = "user updateComment",
+            path = "/api/user/updateComment",
+            methods = HttpMethod.POST,
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = CommentUpdate.class)},
+                    description = "Comment Update object",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
+    )
+    public static void updateComment(final Context ctx) throws SQLException {
+        final CommentUpdate tracked = ctx.bodyAsClass(CommentUpdate.class);
+        final int userID = Auth.getUserFromContext(ctx);
+        final boolean res = Projects.updateComment(tracked.id(), userID, tracked.comment());
+        Responses.setResponseOrError(ctx, res);
+    }
+
+    @OpenApi(
         summary = "Get Data to Analyse",
         operationId = "user getDataToAnalyse",
         path = "/api/user/dataToAnalyse",

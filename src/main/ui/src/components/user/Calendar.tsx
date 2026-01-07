@@ -44,6 +44,7 @@ export interface TrackedEvent {
     start: Date;
     end: Date;
     color: string;
+    comment: string;
 }
 
 export const CalendarView = () : ReactElement => {
@@ -89,6 +90,7 @@ export const CalendarView = () : ReactElement => {
             projectId: event.projectId,
             start: event.start.toISOString(),
             user: 0,
+            comment: event.comment,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
         };
         const res = await updateTracking(track);
@@ -134,44 +136,14 @@ export const CalendarView = () : ReactElement => {
                 start: parseDate(t.start, t.timezone),
                 end: parseDate(t.end, t.timezone),
                 projectId: t.projectId,
-                color: getProjectColor(t.projectId)
+                color: getProjectColor(t.projectId),
+                comment: t.comment
             }
         });
         res.sort((a, b) => a.start.getTime() - b.start.getTime());
         return res;
     }
-/*
-    const getTimeOfDayMs = (dateStr): number => {
-        const d = new Date(dateStr);
-        return d.getHours() * 3600000 + d.getMinutes() * 60000 + d.getSeconds() * 1000 + d.getMilliseconds();
-    };
 
-    const getEarliestStart = (): Date => {
-        if (tracking.length === 0) {
-            return new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 0);
-        }
-        const start = tracking.reduce((latest, curr) => {
-            return getTimeOfDayMs(curr.start) < getTimeOfDayMs(latest.start) ? curr : latest;
-        }, tracking[0]);
-
-        const offsetMinutes = new Date().getTimezoneOffset();
-        const startDate = new Date(new Date(start.start).getTime() - offsetMinutes * 60000);
-        return new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startDate.getHours() , 0);
-    }
-
-    const getLatestEnd = (): Date => {
-        if (tracking.length === 0) {
-            return new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 0);
-        }
-        const end = tracking.reduce((latest, curr) => {
-            return getTimeOfDayMs(curr.end) > getTimeOfDayMs(latest.end) ? curr : latest;
-        }, tracking[0]);
-
-        const offsetMinutes = new Date().getTimezoneOffset();
-        const endDate = new Date(new Date(end.end).getTime() - offsetMinutes * 60000);
-        return new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endDate.getHours() +1 , 0);
-    }
-*/
     useEffect(()=>{
         fetchAndSetData({start:start, end: end});
     },[])
@@ -207,7 +179,7 @@ export const CalendarView = () : ReactElement => {
     }
 
     const handleSelectSlot = (e: {start: Date, end:Date}): void => {
-        setDialog({id: -1, title: "New Event", start: e.start, end: e.end, color: "white", projectId: 0});
+        setDialog({id: -1, title: "New Event", start: e.start, end: e.end, color: "white", projectId: 0, comment: ""});
     }
 
     return <div className="calendar">
@@ -226,8 +198,6 @@ export const CalendarView = () : ReactElement => {
                 view={view}
                 defaultView={"week"}
                 step={15}
-                //min={getEarliestStart()}
-                //max={getLatestEnd()}
                 views={["day", "work_week","week"]}
                 onView={(v) => setView(v)}
                 onNavigate={(date) => {

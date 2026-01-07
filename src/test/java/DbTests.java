@@ -1,3 +1,28 @@
+/*-
+ * #%L
+ * Klukka
+ * %%
+ * Copyright (C) 2025 - 2026 Nikolai Reed reed@1manprojects.de
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
 import de.OneManProjects.data.Group;
 import de.OneManProjects.database.*;
 import de.OneManProjects.utils.Util;
@@ -625,13 +650,13 @@ public class DbTests {
 			final boolean delAll = Projects.deleteAllUserProjects(1);
 			Assertions.assertTrue(delAll);
 
-			final int trackId = Projects.addTracking(new de.OneManProjects.data.Tracked(-1, 2, 3, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), "UTC", false));
+			final int trackId = Projects.addTracking(new de.OneManProjects.data.Tracked(-1, 2, 3, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), "UTC", false, "test"));
 			assertEquals(999, trackId);
 
 			final boolean stopped = Projects.stopTracking(999, 2);
 			Assertions.assertTrue(stopped);
 
-			final de.OneManProjects.data.Tracked t = new de.OneManProjects.data.Tracked(999, 2, 3, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), "UTC", true);
+			final de.OneManProjects.data.Tracked t = new de.OneManProjects.data.Tracked(999, 2, 3, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), "UTC", true, "test");
 			final boolean updated = Projects.updateTracking(t, 2);
 			Assertions.assertTrue(updated);
 		}
