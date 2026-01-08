@@ -163,6 +163,7 @@ export const CalendarView = () : ReactElement => {
             backgroundImage: "linear-gradient(to right,"+e.event.color+", white 100%)"
         }
         return<div className="rbc-event" style={newStyle}
+            title={e.event.comment}
             onClick={() => handleSelectEvent(e.event)}
             >
                 <div className="rbc-event-label">
@@ -170,6 +171,7 @@ export const CalendarView = () : ReactElement => {
                 </div>
                 <div className="rbc-event-content">
                     {e.event.title}
+                    <span className="rbc-event-comment">{e.event.comment}</span>
                 </div>
             </div>
     }
