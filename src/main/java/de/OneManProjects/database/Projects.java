@@ -90,7 +90,7 @@ public class Projects {
     public static List<Project> getProjects(final int refId, final boolean all) throws SQLException {
         return Database.executeQueryList(
                 "SELECT id,ref,refType,title,description,color,archived FROM "+ Database.PROJECT_TABLE +
-                        " WHERE reftype = '" + RefType.USER + "' AND ref = ?",
+                        " WHERE reftype = '" + RefType.USER + "' AND ref = ?" + (all? "" : " AND archived = false"),
                 Projects::parseProject,
                 refId
         );
