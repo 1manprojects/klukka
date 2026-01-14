@@ -237,18 +237,29 @@ export const Activity = (props: ActivityProps) : ReactElement => {
     }
 
     const renderBar = (): ReactElement[] => {
+        const data = getDataByPreset();
+        const projectKeys = new Set<string>();
+        data.forEach(entry => {
+            Object.keys(entry).forEach(k => {
+                if (k !== 'name') projectKeys.add(k);
+            })
+        })
+
         const bars: ReactElement[] = [];
-        projects.forEach(project => {
-            bars.push(<Bar 
-                key={project.id}
-                dataKey={"Project"+ project.id}
-                stackId={"a"}
-                fill={project.color}
-                maxBarSize={50}
-                >
-                
-            </Bar>)
-        });
+        Array.from(projectKeys).forEach(key => {
+            const id = +key.substring(7);
+            const project = projects.find(p => p.id === id);
+            const fill = project ? project.color : '#000000';
+            bars.push(
+                <Bar
+                    key={key}
+                    dataKey={key}
+                    stackId={"a"}
+                    fill={fill}
+                    maxBarSize={50}
+                />
+            )
+        })
         return bars;
     }
 
