@@ -50,6 +50,11 @@ export const EditEvent = (props: EditEventProps): ReactElement => {
         return {color: "black", id: -1, title: "No project", description:"missing", trackedThisMonth:0, ref: -1, refType: "USER",archived: false};
     }
 
+    const isArchived = (): boolean => {
+        const p = getProject(event.projectId);
+        return p.archived;
+    }
+
     const formatDate = (date: Date): string => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -101,6 +106,7 @@ export const EditEvent = (props: EditEventProps): ReactElement => {
     
     return <div className="editEvent">
         <h2>{event.title}</h2>
+        {isArchived() && <span className="archived">This project is archived, you can&apos;t edit this event</span>}
         <label>{"Tracked: " + getDurationAsString(event.start, event.end)}</label>
         <h3>Project</h3>
         <Select
@@ -126,6 +132,7 @@ export const EditEvent = (props: EditEventProps): ReactElement => {
                     setEvent({ ...event, color: e.value.color, projectId: e.value.id })}
                 }
             }
+            isDisabled={isArchived()}
             placeholder="Select project"
             value={{ value: getProject(event.projectId), label: getProject(event.projectId).title }}
         />
@@ -136,6 +143,7 @@ export const EditEvent = (props: EditEventProps): ReactElement => {
                 id="date"
                 value={formatDate(event.start)} // Display formatted date
                 onChange={handleDateStartChange}
+                disabled={isArchived()}
                 style={{ width: '100%' }} // Full width for mobile
             />
             <br />
@@ -145,6 +153,7 @@ export const EditEvent = (props: EditEventProps): ReactElement => {
                 id="time"
                 value={formatTime(event.start)} // Display formatted time
                 onChange={handleTimeStartChange}
+                disabled={isArchived()}
                 style={{ width: '100%' }} // Full width for mobile
             />
          </div>
@@ -155,6 +164,7 @@ export const EditEvent = (props: EditEventProps): ReactElement => {
                 id="date"
                 value={formatDate(event.end)} // Display formatted date
                 onChange={handleDateEndChange}
+                disabled={isArchived()}
                 style={{ width: '100%' }} // Full width for mobile
             />
             <br />
@@ -164,6 +174,7 @@ export const EditEvent = (props: EditEventProps): ReactElement => {
                 id="time"
                 value={formatTime(event.end)} // Display formatted time
                 onChange={handleTimeEndChange}
+                disabled={isArchived()}
                 style={{ width: '100%' }} // Full width for mobile
             />
          </div>
@@ -171,7 +182,8 @@ export const EditEvent = (props: EditEventProps): ReactElement => {
             <h3>Comment</h3>
             <textarea 
                 value={event.comment} 
-                onChange={(e) => setEvent({...event, comment: e.target.value})} 
+                onChange={(e) => setEvent({...event, comment: e.target.value})}
+                disabled={isArchived()}
                 placeholder="Details about your work ..."
             />
         </div>

@@ -1,8 +1,15 @@
 .editEvent {
+    display: grid;
 
     .project-select {
         margin-bottom: 2rem;
         //margin-top: 2rem;
+    }
+
+    .archived {
+        color: red;
+        font-size: smaller;
+        margin-bottom: 1rem;
     }
 
     .comments {
