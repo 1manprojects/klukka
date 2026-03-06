@@ -42,7 +42,7 @@ import de.OneManProjects.database.Users;
 
 public class Exporter {
 
-    private static final String HEADERS_DETAILED = String.join(";", "Project", "Start", "End", "Duration hh::mm", "Description");
+    private static final String HEADERS_DETAILED = String.join(";", "Project", "Start", "End", "Duration hh::mm", "Description", "Comment");
     private static final String HEADERS_GROUP_DETAILED = String.join(";", "Project", "Start", "End", "Duration hh::mm", "User", "Description");
     private static final String HEADERS = String.join(";", "Project", "Duration hh::mm", "Description");
 
@@ -86,12 +86,14 @@ public class Exporter {
         final List<String> rows = tracked.stream().map(trackedItem -> {
             final Optional<Project> p = userProjects.stream().filter(project -> project.getId() == trackedItem.getProjectId()).findFirst();
             final Optional<Project> g = groupProjects.stream().filter(project -> project.getId() == trackedItem.getProjectId()).findFirst();
-            return String.format("%s,%s,%s,%s,%s",
+            return String.format("%s,%s,%s,%s,%s,%s",
                 getProjectTitle(p, g),
                 trackedItem.getStart().toString(),
                 trackedItem.getEnd().toString(),
                 getDuration(trackedItem),
-                getDescription(p, g));
+                getDescription(p, g),
+                trackedItem.getComment()
+            );
         }).toList();
 
         final StringBuilder csvContent = new StringBuilder();
