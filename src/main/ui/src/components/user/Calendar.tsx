@@ -54,6 +54,7 @@ export const CalendarView = () : ReactElement => {
     const [tracking, setTracking] = useState<Tracked[]>([]);
     const [start, setStart] = useState<string>(getStartOfWeek(new Date()));
     const [end, setEnd] = useState<string>(getEndOfWeek(new Date()))
+    const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [view , setView] = useState<View>("week");
 
     const screen = useScreenWidth();
@@ -193,7 +194,7 @@ export const CalendarView = () : ReactElement => {
                 events={getEvents()}
                 startAccessor={"start"}
                 endAccessor={"end"}
-                defaultDate={new Date()}
+                date={currentDate}
                 onSelectEvent={handleSelectEvent}
                 onSelectSlot={handleSelectSlot}
                 selectable
@@ -207,6 +208,7 @@ export const CalendarView = () : ReactElement => {
                     const end = getEndOfWeek(date);
                     setStart(start);
                     setEnd(end);
+                    setCurrentDate(date);
                     fetchAndSetData({start:start, end: end});
                 }}
                 formats={{timeGutterFormat: "HH:mm", eventTimeRangeFormat: trackingFormat}}

@@ -87,6 +87,7 @@ export const getStartOfWeek = (date: Date): string => {
     const monday = new Date(date);
     monday.setDate(date.getDate() + diff);
     monday.setUTCHours(0, 0, 0, 0);
+    console.log("start: " + monday.toISOString());
     return monday.toISOString();
 };
 
@@ -96,6 +97,7 @@ export const getEndOfWeek = (date: Date): string => {
     const sunday = new Date(date);
     sunday.setDate(date.getDate() + diff)
     sunday.setUTCHours(23,59,59,0)
+    console.log("end: " + sunday.toISOString());
     return sunday.toISOString();
 }
 
