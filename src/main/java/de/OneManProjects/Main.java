@@ -60,6 +60,8 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static de.OneManProjects.api.Admins.PRIVACY_HTML;
+import static io.javalin.apibuilder.ApiBuilder.post;
+import static io.javalin.apibuilder.ApiBuilder.get;
 
 public class Main {
 
@@ -84,6 +86,7 @@ public class Main {
     }
 
     public static Javalin createJavalinApp(final boolean DEBUG, final Optional<String> AppUrl) {
+
         final Gson gson = new GsonBuilder()
         .registerTypeAdapter(
                 new TypeToken<Optional<Timestamp>>() {}.getType(),
@@ -98,6 +101,7 @@ public class Main {
                         new OptionalTypeAdapter<>(new Gson().getAdapter(String.class))
                 )
         .create();
+
         final JsonMapper gsonMapper = new JsonMapper() {
             @NotNull
             @Override
@@ -137,74 +141,72 @@ public class Main {
                 staticFiles.mimeTypes.add(ContentType.TEXT_JS);
             });
             config.spaRoot.addFile("/", "/frontend/index.html", Location.CLASSPATH);
+
+            config.routes.before(ctx -> {
+                if (DEBUG) {
+                    ctx.header("Access-Control-Allow-Origin", "http://localhost:3000");
+                } else {
+                    ctx.header("Access-Control-Allow-Origin", AppUrl.orElseThrow());
+                }
+                ctx.header("Access-Control-Allow-Credentials", "true");
+                ctx.header("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept");
+                ctx.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+            });
+
+            config.routes.apiBuilder(() -> {
+                post("api/login", ctx -> runAction(ctx, Logins::login, false));
+                post("api/logout", ctx -> runAction(ctx, Logins::logout, false));
+                post("api/login/reset", ctx -> runAction(ctx, Logins::sendResetPasswordLink, false));
+                post("api/login/token", ctx -> runAction(ctx, Logins::resetPasswordByToken, false));
+                post("api/login/check", ctx -> runAction(ctx, Logins::validToken, false));
+                get("api/refresh", ctx -> runAction(ctx, Logins::refresh, false));
+                post("api/start", ctx -> runAction(ctx, Users::startTracking, true));
+                post("api/stop", ctx -> runAction(ctx, Users::stopTracking, true));
+                post("api/add", ctx -> runAction(ctx, Users::addPersonalProject, true));
+                get("api/active", ctx -> runAction(ctx, Users::getActive, true));
+                get("api/month", ctx -> runAction(ctx, Users::getMonth, true));
+                post("api/deleteProject", ctx -> runAction(ctx, Users::deleteUserProject, true));
+                post("api/data", ctx -> runAction(ctx, Users::getDataToAnalyse, true));
+                post("api/delete", ctx -> runAction(ctx, Users::deleteTracking, true));
+                post("api/edit", ctx -> runAction(ctx, Users::updateProject, true));
+                post("api/update", ctx -> runAction(ctx, Users::updateTracking, true));
+                post("api/export", ctx -> runAction(ctx, Users::exportData, true));
+                post("api/archive", ctx -> runAction(ctx, Users::archiveProject, true));
+                post("api/comment", ctx -> runAction(ctx, Users::updateComment, true));
+                post("api/user/updatePassword", ctx -> runAction(ctx, Users::updatePassword, true));
+                post("api/user/changeMail", ctx -> runAction(ctx, Users::updateUserMail, true));
+                post("api/user/createToken", ctx -> runAction(ctx, Users::createUserApiToken, true));
+                post("api/user/deleteToken", ctx -> runAction(ctx, Users::deleteToken, true));
+                get("api/role", ctx -> runAction(ctx, Users::getUserRole, true));
+                get("api/archived", ctx -> runAction(ctx, Users::getUserArchivedProjects, true));
+                get("api/projects", ctx -> runAction(ctx, Users::getUserProjects, true));
+                get("api/user/leaveGroup", ctx -> runAction(ctx, Groups::userLeaveGroup, true));
+                get("api/user/data", ctx -> runAction(ctx, Users::getUserData, true));
+                get("api/user/delete", ctx -> runAction(ctx, Users::deleteAccount, true));
+                get("api/user/listTokens", ctx -> runAction(ctx, Users::getUserTokens, true));
+                post("api/group/create", ctx -> runAction(ctx, Groups::groupUserCreateGroup, true));
+                post("api/group/update", ctx -> runAction(ctx, Groups::groupUpdate, true));
+                post("api/group/invite", ctx -> runAction(ctx, Groups::groupUserInvite, true));
+                post("api/group/remove", ctx -> runAction(ctx, Groups::groupUserRemove, true));
+                post("api/group/addProject", ctx -> runAction(ctx, Groups::groupAddProject, true));
+                post("api/group/deleteProject", ctx -> runAction(ctx, Groups::groupDeleteProject, true));
+                post("api/group/deleteGroup", ctx -> runAction(ctx, Groups::groupDelete, true));
+                post("api/group/details", ctx -> runAction(ctx, Groups::getGroupDetails, true));
+                post("api/group/data", ctx -> runAction(ctx, Groups::getGroupDataToAnalyse, true));
+                post("api/group/export", ctx -> runAction(ctx, Groups::exportData, true));
+                get("api/group", ctx -> runAction(ctx, Groups::getManagedGroups, true));
+                post("api/admin/invite", ctx -> runAction(ctx, Admins::adminAddNewUser, true));
+                post("api/admin/updateRole", ctx -> runAction(ctx, Admins::adminUpdateRoles, true));
+                post("api/admin/deleteUser", ctx -> runAction(ctx, Admins::adminDeleteUser, true));
+                post("api/admin/deleteGroup", ctx -> runAction(ctx, Admins::adminDeleteGroup, true));
+                post("api/admin/setPrivacy", ctx -> runAction(ctx, Admins::setPrivacyHtml, true));
+                get("api/admin", ctx -> runAction(ctx, Admins::getAdminData, true));
+                get("api/validate", ctx -> runAction(ctx, Logins::validate, true));
+                get("api/info", ctx -> runAction(ctx, Main::getDepInfo, false));
+                get("api/version", ctx -> runAction(ctx, Main::getVersion, false));
+                get("api/privacy", ctx -> runAction(ctx, Main::getPrivacyInfo, false));
+            });
         });
-
-        app.before(ctx -> {
-            if (DEBUG) {
-                ctx.header("Access-Control-Allow-Origin", "http://localhost:3000");
-            } else {
-                ctx.header("Access-Control-Allow-Origin", AppUrl.orElseThrow());
-            }
-            ctx.header("Access-Control-Allow-Credentials", "true");
-            ctx.header("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept");
-            ctx.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        });
-
-        app.post("api/login", ctx -> runAction(ctx, Logins::login, false));
-        app.post("api/logout", ctx -> runAction(ctx, Logins::logout, false));
-        app.post("api/login/reset", ctx -> runAction(ctx, Logins::sendResetPasswordLink, false));
-        app.post("api/login/token", ctx -> runAction(ctx, Logins::resetPasswordByToken, false));
-        app.post("api/login/check", ctx -> runAction(ctx, Logins::validToken, false));
-        app.get("api/refresh", ctx -> runAction(ctx, Logins::refresh, false));
-
-        app.post("api/start", ctx -> runAction(ctx, Users::startTracking, true));
-        app.post("api/stop", ctx -> runAction(ctx, Users::stopTracking, true));
-        app.post("api/add", ctx -> runAction(ctx, Users::addPersonalProject, true));
-        app.get("api/active", ctx -> runAction(ctx, Users::getActive, true));
-        app.get("api/month", ctx -> runAction(ctx, Users::getMonth, true));
-        app.post("api/deleteProject", ctx -> runAction(ctx, Users::deleteUserProject, true));
-        app.post("api/data", ctx -> runAction(ctx, Users::getDataToAnalyse, true));
-        app.post("api/delete", ctx -> runAction(ctx, Users::deleteTracking, true));
-        app.post("api/edit", ctx -> runAction(ctx, Users::updateProject, true));
-        app.post("api/update", ctx -> runAction(ctx, Users::updateTracking, true));
-        app.post("api/export", ctx -> runAction(ctx, Users::exportData, true));
-        app.post("api/archive", ctx -> runAction(ctx, Users::archiveProject, true));
-        app.post("api/comment", ctx -> runAction(ctx, Users::updateComment, true));
-        app.post("api/user/updatePassword", ctx -> runAction(ctx, Users::updatePassword, true));
-        app.post("api/user/changeMail", ctx -> runAction(ctx, Users::updateUserMail, true));
-        app.post("api/user/createToken", ctx -> runAction(ctx, Users::createUserApiToken, true));
-        app.post("api/user/deleteToken", ctx -> runAction(ctx, Users::deleteToken, true));
-        app.get("api/role", ctx -> runAction(ctx, Users::getUserRole, true));
-        app.get("api/archived", ctx -> runAction(ctx, Users::getUserArchivedProjects, true));
-        app.get("api/projects", ctx -> runAction(ctx, Users::getUserProjects, true));
-        app.get("api/user/leaveGroup", ctx -> runAction(ctx, Groups::userLeaveGroup, true));
-        app.get("api/user/data", ctx -> runAction(ctx, Users::getUserData, true));
-        app.get("api/user/delete", ctx -> runAction(ctx, Users::deleteAccount, true));
-        app.get("api/user/listTokens", ctx -> runAction(ctx, Users::getUserTokens, true));
-
-        app.post("api/group/create", ctx -> runAction(ctx, Groups::groupUserCreateGroup, true));
-        app.post("api/group/update", ctx -> runAction(ctx, Groups::groupUpdate, true));
-        app.post("api/group/invite", ctx -> runAction(ctx, Groups::groupUserInvite, true));
-        app.post("api/group/remove", ctx -> runAction(ctx, Groups::groupUserRemove, true));
-        app.post("api/group/addProject", ctx -> runAction(ctx, Groups::groupAddProject, true));
-        app.post("api/group/deleteProject", ctx -> runAction(ctx, Groups::groupDeleteProject, true));
-        app.post("api/group/deleteGroup", ctx -> runAction(ctx, Groups::groupDelete, true));
-        app.post("api/group/details", ctx -> runAction(ctx, Groups::getGroupDetails, true));
-        app.post("api/group/data", ctx -> runAction(ctx, Groups::getGroupDataToAnalyse, true));
-        app.post("api/group/export", ctx -> runAction(ctx, Groups::exportData, true));
-        app.get("api/group", ctx -> runAction(ctx, Groups::getManagedGroups, true));
-
-        app.post("api/admin/invite", ctx -> runAction(ctx, Admins::adminAddNewUser, true));
-        app.post("api/admin/updateRole", ctx -> runAction(ctx, Admins::adminUpdateRoles, true));
-        app.post("api/admin/deleteUser", ctx -> runAction(ctx, Admins::adminDeleteUser, true));
-        app.post("api/admin/deleteGroup", ctx -> runAction(ctx, Admins::adminDeleteGroup, true));
-        app.post("api/admin/setPrivacy", ctx -> runAction(ctx, Admins::setPrivacyHtml, true));
-        app.get("api/admin", ctx -> runAction(ctx, Admins::getAdminData, true));
-
-        app.get("api/validate", ctx -> runAction(ctx, Logins::validate, true));
-        app.get("api/info", ctx -> runAction(ctx, Main::getDepInfo, false));
-        app.get("api/version", ctx -> runAction(ctx, Main::getVersion, false));
-        app.get("api/privacy", ctx -> runAction(ctx, Main::getPrivacyInfo, false));
         return app;
     }
 
