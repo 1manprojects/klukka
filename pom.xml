@@ -72,7 +72,6 @@
                 </executions>
                 <configuration>
                     <jsonLibrary>gson</jsonLibrary>
-                    <useClasspathForCompilation>false</useClasspathForCompilation>
                     <classPatterns>
                         <classPattern>de.OneManProjects.data.dto.*</classPattern>
                         <classPattern>de.OneManProjects.data.*</classPattern>
