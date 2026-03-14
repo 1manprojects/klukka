@@ -50,6 +50,10 @@ export const EditEvent = (props: EditEventProps): ReactElement => {
         return {color: "black", id: -1, title: "No project", description:"missing", trackedThisMonth:0, ref: -1, refType: "USER",archived: false};
     }
 
+    const getProjectList = ():Project[] => {
+        return props.projects.filter(p => !p.archived);
+    }
+
     const isArchived = (): boolean => {
         const p = getProject(event.projectId);
         return p.archived;
@@ -126,7 +130,7 @@ export const EditEvent = (props: EditEventProps): ReactElement => {
                 backgroundImage: "linear-gradient(to right, " + state.data.value.color + ", white 100%)",
                 })
             }}
-            options={props.projects.map(p => { return { value: p, label: p.title } })}
+            options={getProjectList().map(p => { return { value: p, label: p.title } })}
             onChange={(e) => {
                 if (e) {
                     setEvent({ ...event, color: e.value.color, projectId: e.value.id })}
