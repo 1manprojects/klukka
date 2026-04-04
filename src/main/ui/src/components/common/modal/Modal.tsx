@@ -25,6 +25,8 @@
  */
 import { Fragment, ReactElement } from 'react';
 import './modal.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faX } from '@fortawesome/free-solid-svg-icons';
 
 export const Modal = ({ show, onClose, children }: { show: boolean, onClose: () => void, children: React.ReactNode }): ReactElement => {
     if (!show) {
@@ -35,7 +37,7 @@ export const Modal = ({ show, onClose, children }: { show: boolean, onClose: () 
         <div className="modal-overlay">
             <div className="modal-content">
                 <div className="modal-header">
-                    <button onClick={onClose} className="modal-close">Close</button>
+                    <button onClick={onClose} className="modal-close">Close <FontAwesomeIcon icon={faX}/></button>
                 </div>
                 {children}
             </div>
