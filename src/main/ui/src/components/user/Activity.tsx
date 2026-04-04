@@ -75,12 +75,12 @@ export const buildMonthlyData = (weeklyActivity: Tracked[]): TrackingData[] => {
         const projectName = `Project${activity.projectId}`;
         const duration = (new Date(activity.end).getTime() - new Date(activity.start).getTime()) / (1000 * 60);
 
-        if (dayNumber)
-
-        if (!montlyData[dayNumber][projectName]) {
-            montlyData[dayNumber][projectName] = 0;
+        if (dayNumber && montlyData[dayNumber]) {
+            if (!montlyData[dayNumber][projectName]) {
+                montlyData[dayNumber][projectName] = 0;
+            }
+            montlyData[dayNumber][projectName] = +montlyData[dayNumber][projectName] + duration;
         }
-        montlyData[dayNumber][projectName] = +montlyData[dayNumber][projectName] + duration;
     });
 
     return Object.values(montlyData);
@@ -403,12 +403,17 @@ export const Activity = (props: ActivityProps) : ReactElement => {
 
     return <div className="activity">
         <div className="filter">
-            <div className="presets">
-                <button className="b1" onClick={navigatBack}><FontAwesomeIcon icon={faArrowLeft}/> Back</button>
-                <button className={selectedPreset === "Today"? "b2 active": "b2"} onClick={()=>changeFilter("Today")}>Today</button>
-                <button className={selectedPreset === "Week"? "b3 active": "b3"} onClick={()=>changeFilter("Week")}>This Week</button>
-                <button className={selectedPreset === "Month"? "b4 active": "b4"} onClick={()=>changeFilter("Month")}>This month</button>
-                <button className="b5" onClick={NavigateNext}>Next <FontAwesomeIcon icon={faArrowRight}/></button>
+            <div>
+                <div className="presets">
+                    <button className={selectedPreset === "Today"? "b2 active": "b2"} onClick={()=>changeFilter("Today")}>Today</button>
+                    <button className={selectedPreset === "Week"? "b3 active": "b3"} onClick={()=>changeFilter("Week")}>This Week</button>
+                    <button className={selectedPreset === "Month"? "b4 active": "b4"} onClick={()=>changeFilter("Month")}>This month</button>
+                    
+                </div>
+                <div className="navigation">
+                    <button className="back" onClick={navigatBack}><FontAwesomeIcon icon={faArrowLeft}/> Back</button>
+                    <button className="next" onClick={NavigateNext}>Next <FontAwesomeIcon icon={faArrowRight}/></button>
+                </div>
             </div>
             <div className="edit">
                 <div className="custom">
