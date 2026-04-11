@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2026-03-14 15:36:40.
+// Generated using typescript-generator version 3.2.1263 on 2026-04-11 10:45:39.
 
 export interface Group {
     id: number;

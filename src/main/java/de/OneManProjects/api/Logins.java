@@ -24,6 +24,7 @@ package de.OneManProjects.api;
  * THE SOFTWARE.
  * #L%
  */
+
 import de.OneManProjects.data.dto.Login;
 import de.OneManProjects.data.dto.PasswordReset;
 import de.OneManProjects.data.dto.Response;
@@ -46,6 +47,7 @@ import java.util.UUID;
 public class Logins {
     @OpenApi(
             summary = "Refresh token from RefreshToken",
+            tags = {"Authentication"},
             operationId = "refresh",
             path = "/api/refresh",
             methods = HttpMethod.GET,
@@ -70,6 +72,7 @@ public class Logins {
 
     @OpenApi(
             summary = "Logout",
+            tags = {"Authentication"},
             operationId = "logout",
             path = "/api/logout",
             methods = HttpMethod.GET,
@@ -87,6 +90,7 @@ public class Logins {
 
     @OpenApi(
             summary = "Login",
+            tags = {"Authentication"},
             operationId = "login",
             path = "/api/login",
             methods = HttpMethod.POST,
@@ -111,7 +115,7 @@ public class Logins {
                 ctx.status(HttpStatus.OK);
                 ctx.json(response);
             } else {
-            ctx.status(HttpStatus.NOT_ACCEPTABLE);
+                ctx.status(HttpStatus.NOT_ACCEPTABLE);
             }
         } else {
             ctx.status(HttpStatus.UNAUTHORIZED);
@@ -120,6 +124,7 @@ public class Logins {
 
     @OpenApi(
             summary = "Request Password reset",
+            tags = {"Authentication"},
             operationId = "login/reset",
             path = "/api/login/reset",
             methods = HttpMethod.POST,
@@ -146,6 +151,7 @@ public class Logins {
 
     @OpenApi(
             summary = "Validate Token for Password reset",
+            tags = {"Authentication"},
             operationId = "login/check",
             path = "/api/login/check",
             methods = HttpMethod.POST,
@@ -172,6 +178,7 @@ public class Logins {
 
     @OpenApi(
             summary = "Reset User Password",
+            tags = {"Authentication"},
             operationId = "login/token",
             path = "/api/login/token",
             methods = HttpMethod.POST,
@@ -204,9 +211,14 @@ public class Logins {
 
     @OpenApi(
             summary = "Validate if cookie is still valid",
+            tags = {"Authentication"},
             operationId = "validate",
             path = "/api/validate",
             methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
             responses = {
                     @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED"),

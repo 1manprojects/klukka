@@ -12,10 +12,10 @@ package de.OneManProjects.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -52,9 +52,14 @@ public class Users {
 
     @OpenApi(
             summary = "Delete User Account",
+            tags = {"User"},
             operationId = "user delete",
             path = "/api/user/delete",
             methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
             responses = {
                     @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":23}")),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN"),
@@ -68,9 +73,14 @@ public class Users {
 
     @OpenApi(
             summary = "Create User Token",
+            tags = {"User"},
             operationId = "user createToken",
             path = "/api/user/createToken",
             methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
             requestBody = @OpenApiRequestBody(
                     content = {@OpenApiContent(from = UserApiToken.class)},
                     description = "UserApiToken Object",
@@ -94,14 +104,19 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Get User Tokens",
-        operationId = "user getTokens",
-        path = "/api/user/tokens",
-        methods = HttpMethod.GET,
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserApiToken.class)),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Get User Tokens",
+            tags = {"User"},
+            operationId = "user getTokens",
+            path = "/api/user/listTokens",
+            methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserApiToken.class)),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void getUserTokens(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
@@ -110,19 +125,24 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Delete User Token",
-        operationId = "user deleteToken",
-        path = "/api/user/deleteToken",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Integer.class)},
-            description = "Token ID to delete",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Delete User Token",
+            tags = {"User"},
+            operationId = "user deleteToken",
+            path = "/api/user/deleteToken",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Integer.class)},
+                    description = "Token ID to delete",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void deleteToken(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
@@ -132,19 +152,24 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Update User Email",
-        operationId = "user updateMail",
-        path = "/api/user/updateMail",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = String.class)},
-            description = "New email address",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Update User Email",
+            tags = {"User"},
+            operationId = "user updateMail",
+            path = "/api/user/changeMail",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = String.class)},
+                    description = "New email address",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void updateUserMail(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
@@ -153,15 +178,20 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Get User Data",
-        operationId = "user getData",
-        path = "/api/user/data",
-        methods = HttpMethod.GET,
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserData.class)),
-            @OpenApiResponse(status = "204", description = "NO_CONTENT"),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Get User Data",
+            tags = {"User"},
+            operationId = "user getData",
+            path = "/api/user/data",
+            methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserData.class)),
+                    @OpenApiResponse(status = "204", description = "NO_CONTENT"),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void getUserData(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
@@ -186,19 +216,24 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Export User Data",
-        operationId = "user exportData",
-        path = "/api/user/export",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = ExportFilter.class)},
-            description = "Export filter",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(type = "text/csv")),
-            @OpenApiResponse(status = "503", description = "SERVICE_UNAVAILABLE")
-        }
+            summary = "Export User Data",
+            tags = {"User"},
+            operationId = "user exportData",
+            path = "/api/export",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = ExportFilter.class)},
+                    description = "Export filter",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(type = "text/csv")),
+                    @OpenApiResponse(status = "503", description = "SERVICE_UNAVAILABLE")
+            }
     )
     public static void exportData(final Context ctx) throws SQLException {
         final ExportFilter filter = ctx.bodyAsClass(ExportFilter.class);
@@ -215,19 +250,24 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Archive Project",
-        operationId = "user archiveProject",
-        path = "/api/user/archiveProject",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = ArchiveId.class)},
-            description = "ArchiveId object",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Archive Project",
+            tags = {"User"},
+            operationId = "user archiveProject",
+            path = "/api/archive",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = ArchiveId.class)},
+                    description = "ArchiveId object",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void archiveProject(final Context ctx) throws SQLException {
         final ArchiveId archiveId = ctx.bodyAsClass(ArchiveId.class);
@@ -240,19 +280,24 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Update Tracking",
-        operationId = "user updateTracking",
-        path = "/api/user/updateTracking",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Tracked.class)},
-            description = "Tracked object",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Update Tracking",
+            tags = {"User"},
+            operationId = "user updateTracking",
+            path = "/api/update",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Tracked.class)},
+                    description = "Tracked object",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void updateTracking(final Context ctx) throws SQLException {
         final Tracked tracked = ctx.bodyAsClass(Tracked.class);
@@ -263,9 +308,14 @@ public class Users {
 
     @OpenApi(
             summary = "Update Comment",
+            tags = {"User"},
             operationId = "user updateComment",
-            path = "/api/user/updateComment",
+            path = "/api/comment",
             methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
             requestBody = @OpenApiRequestBody(
                     content = {@OpenApiContent(from = CommentUpdate.class)},
                     description = "Comment Update object",
@@ -284,19 +334,24 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Get Data to Analyse",
-        operationId = "user getDataToAnalyse",
-        path = "/api/user/dataToAnalyse",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = DataFilter.class)},
-            description = "DataFilter object",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = AnalysisData.class)),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Get Data to Analyse",
+            tags = {"User"},
+            operationId = "user getDataToAnalyse",
+            path = "/api/data",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = DataFilter.class)},
+                    description = "DataFilter object",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = AnalysisData.class)),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void getDataToAnalyse(final Context ctx) throws SQLException {
         final DataFilter filter = ctx.bodyAsClass(DataFilter.class);
@@ -310,19 +365,24 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Delete Tracking Entry",
-        operationId = "user deleteTracking",
-        path = "/api/user/deleteTracking",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Integer.class)},
-            description = "Tracking ID to delete",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Delete Tracking Entry",
+            tags = {"User"},
+            operationId = "user deleteTracking",
+            path = "/api/delete",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Integer.class)},
+                    description = "Tracking ID to delete",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void deleteTracking(final Context ctx) throws SQLException {
         final int id = ctx.bodyAsClass(Integer.class);
@@ -332,19 +392,24 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Delete User Project",
-        operationId = "user deleteProject",
-        path = "/api/user/deleteProject",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Integer.class)},
-            description = "Project ID to delete",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Delete User Project",
+            tags = {"User"},
+            operationId = "user deleteProject",
+            path = "/api/deleteProject",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Integer.class)},
+                    description = "Project ID to delete",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void deleteUserProject(final Context ctx) throws SQLException {
         final int idToDel = ctx.bodyAsClass(Integer.class);
@@ -358,14 +423,19 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Get User Role",
-        operationId = "user getRole",
-        path = "/api/user/role",
-        methods = HttpMethod.GET,
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Role.class)),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Get User Role",
+            tags = {"User"},
+            operationId = "user getRole",
+            path = "/api/role",
+            methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Role.class)),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void getUserRole(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
@@ -374,14 +444,19 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Get User Projects",
-        operationId = "user getProjects",
-        path = "/api/user/projects",
-        methods = HttpMethod.GET,
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserProjects.class)),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Get User Projects",
+            tags = {"User"},
+            operationId = "user getProjects",
+            path = "/api/projects",
+            methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserProjects.class)),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void getUserProjects(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
@@ -391,20 +466,25 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Update Project",
-        operationId = "user updateProject",
-        path = "/api/user/updateProject",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Project.class)},
-            description = "Project object to update",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED"),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Update Project",
+            tags = {"User"},
+            operationId = "user updateProject",
+            path = "/api/edit",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Project.class)},
+                    description = "Project object to update",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED"),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void updateProject(final Context ctx) throws SQLException {
         final Project toUpdate = ctx.bodyAsClass(Project.class);
@@ -417,14 +497,19 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Get User Archived Projects",
-        operationId = "user getArchivedProjects",
-        path = "/api/user/archivedProjects",
-        methods = HttpMethod.GET,
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserProjects.class)),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Get User Archived Projects",
+            tags = {"User"},
+            operationId = "user getArchivedProjects",
+            path = "/api/archived",
+            methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserProjects.class)),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void getUserArchivedProjects(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
@@ -434,19 +519,24 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Add Personal Project",
-        operationId = "user addPersonalProject",
-        path = "/api/user/addPersonalProject",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Project.class)},
-            description = "Project object to add",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Add Personal Project",
+            tags = {"User"},
+            operationId = "user addPersonalProject",
+            path = "/api/user/addPersonalProject",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Project.class)},
+                    description = "Project object to add",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void addPersonalProject(final Context ctx) throws SQLException {
         final Project project = ctx.bodyAsClass(Project.class);
@@ -456,9 +546,14 @@ public class Users {
 
     @OpenApi(
             summary = "Start Tracking Project",
+            tags = {"User"},
             operationId = "start",
             path = "/api/start",
             methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
             requestBody = @OpenApiRequestBody(
                     content = {@OpenApiContent(from = Start.class)},
                     description = "Start Object",
@@ -491,14 +586,19 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Get Active Tracking",
-        operationId = "user getActiveTracking",
-        path = "/api/user/activeTracking",
-        methods = HttpMethod.GET,
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Tracked.class)),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Get Active Tracking",
+            tags = {"User"},
+            operationId = "user getActiveTracking",
+            path = "/api/active",
+            methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Tracked.class)),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void getActive(final Context ctx) throws SQLException {
         final int userID = Auth.getUserFromContext(ctx);
@@ -507,14 +607,19 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Get Tracked Minutes This Month",
-        operationId = "user getMonth",
-        path = "/api/user/month",
-        methods = HttpMethod.GET,
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Double.class)),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Get Tracked Minutes This Month",
+            tags = {"User"},
+            operationId = "user getMonth",
+            path = "/api/month",
+            methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Double.class)),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void getMonth(final Context ctx) throws SQLException {
         final int userID = Auth.getUserFromContext(ctx);
@@ -523,19 +628,24 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Stop Tracking",
-        operationId = "user stopTracking",
-        path = "/api/user/stopTracking",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Integer.class)},
-            description = "Tracking ID to stop",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Stop Tracking",
+            tags = {"User"},
+            operationId = "user stopTracking",
+            path = "/api/user/stopTracking",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Integer.class)},
+                    description = "Tracking ID to stop",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void stopTracking(final Context ctx) throws SQLException {// throws SQLException {
         final int userID = Auth.getUserFromContext(ctx);
@@ -545,19 +655,24 @@ public class Users {
     }
 
     @OpenApi(
-        summary = "Update Password",
-        operationId = "user updatePassword",
-        path = "/api/user/updatePassword",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = String.class)},
-            description = "New password",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-            @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
-        }
+            summary = "Update Password",
+            tags = {"User"},
+            operationId = "user updatePassword",
+            path = "/api/user/updatePassword",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = String.class)},
+                    description = "New password",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
     )
     public static void updatePassword(final Context ctx) throws SQLException {
         final String newPass = ctx.bodyAsClass(String.class);

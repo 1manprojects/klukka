@@ -12,10 +12,10 @@ package de.OneManProjects.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,8 +38,8 @@ import de.OneManProjects.mail.Mail;
 import de.OneManProjects.security.Auth;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
-import jakarta.mail.MessagingException;
 import io.javalin.openapi.*;
+import jakarta.mail.MessagingException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -54,19 +54,24 @@ import java.util.Optional;
 public class Groups {
 
     @OpenApi(
-        summary = "Get Group Details",
-        operationId = "group getDetails",
-        path = "/api/group/details",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Integer.class)},
-            description = "Group ID",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = GroupDetails.class)),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Get Group Details",
+            tags = {"Groups"},
+            operationId = "group getDetails",
+            path = "/api/group/details",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Integer.class)},
+                    description = "Group ID",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = GroupDetails.class)),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void getGroupDetails(final Context ctx) throws SQLException {
         if (Auth.isUserGroup(ctx)) {
@@ -91,14 +96,19 @@ public class Groups {
         final LocalDate date1 = start.atZone(ZoneId.systemDefault()).toLocalDate();
         final LocalDate date2 = end.atZone(ZoneId.systemDefault()).toLocalDate();
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd_MM_yyyy");
-        return "Export-" + groupName.replace(" ","_") + "-" + formatter.format(date1) + "-" + formatter.format(date2) + ".csv";
+        return "Export-" + groupName.replace(" ", "_") + "-" + formatter.format(date1) + "-" + formatter.format(date2) + ".csv";
     }
 
     @OpenApi(
             summary = "Get Group Tracking Export",
+            tags = {"Groups"},
             operationId = "group data export",
             path = "/api/group/export",
             methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
             requestBody = @OpenApiRequestBody(
                     content = {@OpenApiContent(from = ExportFilter.class)},
                     description = "Export filter with GroupID set",
@@ -131,9 +141,14 @@ public class Groups {
 
     @OpenApi(
             summary = "Get Group data for Analysis",
+            tags = {"Groups"},
             operationId = "group data for Analysis",
             path = "/api/group/data",
             methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
             requestBody = @OpenApiRequestBody(
                     content = {@OpenApiContent(from = DataFilter.class)},
                     description = "Data filter with GroupID set",
@@ -164,19 +179,24 @@ public class Groups {
     }
 
     @OpenApi(
-        summary = "Create New Group",
-        operationId = "group create",
-        path = "/api/group/create",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = de.OneManProjects.data.Group.class)},
-            description = "Group object to create",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Create New Group",
+            tags = {"Groups"},
+            operationId = "group create",
+            path = "/api/group/create",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = de.OneManProjects.data.Group.class)},
+                    description = "Group object to create",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void groupUserCreateGroup(final Context ctx) throws SQLException {
         if (Auth.isUserGroup(ctx)) {
@@ -190,19 +210,24 @@ public class Groups {
     }
 
     @OpenApi(
-        summary = "Delete Group",
-        operationId = "group delete",
-        path = "/api/group/delete",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Integer.class)},
-            description = "Group ID to delete",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Delete Group",
+            tags = {"Groups"},
+            operationId = "group delete",
+            path = "/api/group/deleteGroup",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Integer.class)},
+                    description = "Group ID to delete",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void groupDelete(final Context ctx) throws SQLException {
         if (Auth.isUserGroup(ctx)) {
@@ -221,19 +246,24 @@ public class Groups {
     }
 
     @OpenApi(
-        summary = "Invite User to Group",
-        operationId = "group inviteUser",
-        path = "/api/group/inviteUser",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = GroupToUser.class)},
-            description = "GroupToUser object (groupId, mail)",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = String.class, example = "Invite sent | User does not exist | Error matching user to Group")),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Invite User to Group",
+            tags = {"Groups"},
+            operationId = "group inviteUser",
+            path = "/api/group/invite",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = GroupToUser.class)},
+                    description = "GroupToUser object (groupId, mail)",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = String.class, example = "Invite sent | User does not exist | Error matching user to Group")),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void groupUserInvite(final Context ctx) throws SQLException, MessagingException, IOException {
         if (Auth.isUserGroup(ctx)) {
@@ -262,19 +292,24 @@ public class Groups {
     }
 
     @OpenApi(
-        summary = "Remove User from Group",
-        operationId = "group removeUser",
-        path = "/api/group/removeUser",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = GroupToUser.class)},
-            description = "GroupToUser object (groupId, mail)",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Remove User from Group",
+            tags = {"Groups"},
+            operationId = "group removeUser",
+            path = "/api/group/remove",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = GroupToUser.class)},
+                    description = "GroupToUser object (groupId, mail)",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void groupUserRemove(final Context ctx) throws SQLException {
         if (Auth.isUserGroup(ctx)) {
@@ -294,19 +329,24 @@ public class Groups {
     }
 
     @OpenApi(
-        summary = "Add Project to Group",
-        operationId = "group addProject",
-        path = "/api/group/addProject",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Project.class)},
-            description = "Project object to add to group",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Add Project to Group",
+            tags = {"Groups"},
+            operationId = "group addProject",
+            path = "/api/group/addProject",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Project.class)},
+                    description = "Project object to add to group",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void groupAddProject(final Context ctx) throws SQLException {
         if (Auth.isUserGroup(ctx)) {
@@ -323,19 +363,24 @@ public class Groups {
     }
 
     @OpenApi(
-        summary = "Update Group",
-        operationId = "group update",
-        path = "/api/group/update",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = de.OneManProjects.data.Group.class)},
-            description = "Group object to update",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Update Group",
+            tags = {"Groups"},
+            operationId = "group update",
+            path = "/api/group/update",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = de.OneManProjects.data.Group.class)},
+                    description = "Group object to update",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void groupUpdate(final Context ctx) throws SQLException {
         if (Auth.isUserGroup(ctx)) {
@@ -352,19 +397,24 @@ public class Groups {
     }
 
     @OpenApi(
-        summary = "Delete Project from Group",
-        operationId = "group deleteProject",
-        path = "/api/group/deleteProject",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = IdTupel.class)},
-            description = "IdTupel object (groupId, projectId)",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Delete Project from Group",
+            tags = {"Groups"},
+            operationId = "group deleteProject",
+            path = "/api/group/deleteProject",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = IdTupel.class)},
+                    description = "IdTupel object (groupId, projectId)",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void groupDeleteProject(final Context ctx) throws SQLException {
         if (Auth.isUserGroup(ctx)) {
@@ -381,14 +431,19 @@ public class Groups {
     }
 
     @OpenApi(
-        summary = "Get Managed Groups",
-        operationId = "group getManagedGroups",
-        path = "/api/group/managedGroups",
-        methods = HttpMethod.GET,
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = de.OneManProjects.data.Group.class)),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Get Managed Groups",
+            tags = {"Groups"},
+            operationId = "group getManagedGroups",
+            path = "/api/group",
+            methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = de.OneManProjects.data.Group.class)),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void getManagedGroups(final Context ctx) throws SQLException {
         if (Auth.isUserGroup(ctx)) {
@@ -401,18 +456,23 @@ public class Groups {
     }
 
     @OpenApi(
-        summary = "Leave Group",
-        operationId = "group leave",
-        path = "/api/group/leave",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Integer.class)},
-            description = "Group ID to leave",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class))
-        }
+            summary = "Leave Group",
+            tags = {"Groups"},
+            operationId = "group leave",
+            path = "/api/user/leaveGroup",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Integer.class)},
+                    description = "Group ID to leave",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class))
+            }
     )
     public static void userLeaveGroup(final Context ctx) throws SQLException {
         final int groupId = ctx.bodyAsClass(Integer.class);
