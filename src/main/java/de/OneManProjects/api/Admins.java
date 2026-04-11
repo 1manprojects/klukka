@@ -12,10 +12,10 @@ package de.OneManProjects.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -52,19 +52,24 @@ public class Admins {
     public static final Path PRIVACY_HTML = Path.of("data/privacy.html");
 
     @OpenApi(
-        summary = "Update User Roles",
-        operationId = "admin updateRoles",
-        path = "/api/admin/updateRoles",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = User.class)},
-            description = "User object with updated roles",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class, example = "true")),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Update User Roles",
+            tags = {"Administration"},
+            operationId = "admin updateRoles",
+            path = "/api/admin/updateRole",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = User.class)},
+                    description = "User object with updated roles",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class, example = "true")),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void adminUpdateRoles(final Context ctx) throws SQLException {
         if (Auth.isUserAdmin(ctx)) {
@@ -77,19 +82,24 @@ public class Admins {
     }
 
     @OpenApi(
-        summary = "Add New User",
-        operationId = "admin addNewUser",
-        path = "/api/admin/addNewUser",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = User.class)},
-            description = "User object to add",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class, example = "true")),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Add New User",
+            tags = {"Administration"},
+            operationId = "admin addNewUser",
+            path = "/api/admin/invite",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = User.class)},
+                    description = "User object to add",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class, example = "true")),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void adminAddNewUser(final Context ctx) throws SQLException, MessagingException, IOException {
         if (Auth.isUserAdmin(ctx)) {
@@ -106,19 +116,24 @@ public class Admins {
     }
 
     @OpenApi(
-        summary = "Delete User",
-        operationId = "admin deleteUser",
-        path = "/api/admin/deleteUser",
-        methods = HttpMethod.POST,
-        requestBody = @OpenApiRequestBody(
-            content = {@OpenApiContent(from = Integer.class)},
-            description = "User ID to delete",
-            required = true
-        ),
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class, example = "true")),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Delete User",
+            tags = {"Administration"},
+            operationId = "admin deleteUser",
+            path = "/api/admin/deleteUser",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = Integer.class)},
+                    description = "User ID to delete",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class, example = "true")),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void adminDeleteUser(final Context ctx) throws SQLException {
         if (Auth.isUserAdmin(ctx)) {
@@ -126,17 +141,21 @@ public class Admins {
             final boolean res1 = Users.deleteUser(userToDel);
             final boolean res2 = Projects.deleteAllUserProjects(userToDel);
             Responses.setResponseOrError(ctx, res1 && res2);
-        }
-        else {
+        } else {
             ctx.status(HttpStatus.FORBIDDEN);
         }
     }
 
     @OpenApi(
             summary = "Delete Group",
+            tags = {"Administration"},
             operationId = "admin deleteGroup",
             path = "/api/admin/deleteGroup",
             methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
             requestBody = @OpenApiRequestBody(
                     content = {@OpenApiContent(from = Integer.class)},
                     description = "Group ID to delete",
@@ -152,21 +171,25 @@ public class Admins {
             final int groupToDelete = ctx.bodyAsClass(Integer.class);
             final boolean res1 = Groups.deleteGroup(groupToDelete);
             Responses.setResponseOrError(ctx, res1);
-        }
-        else {
+        } else {
             ctx.status(HttpStatus.FORBIDDEN);
         }
     }
 
     @OpenApi(
-        summary = "Get Admin Data",
-        operationId = "admin getAdminData",
-        path = "/api/admin/data",
-        methods = HttpMethod.GET,
-        responses = {
-            @OpenApiResponse(status = "200", content = @OpenApiContent(from = AdminData.class)),
-            @OpenApiResponse(status = "403", description = "FORBIDDEN")
-        }
+            summary = "Get Admin Data",
+            tags = {"Administration"},
+            operationId = "admin getAdminData",
+            path = "/api/admin",
+            methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = AdminData.class)),
+                    @OpenApiResponse(status = "403", description = "FORBIDDEN")
+            }
     )
     public static void getAdminData(final Context ctx) throws SQLException {
         if (Auth.isUserAdmin(ctx)) {
@@ -178,15 +201,20 @@ public class Admins {
 
     @OpenApi(
             summary = "POST Set Privacy HTML",
+            tags = {"Administration"},
             operationId = "admin setPrivacy",
             path = "/api/admin/setPrivacy",
             methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
             responses = {
                     @OpenApiResponse(status = "200", content = @OpenApiContent(from = String.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void setPrivacyHtml(final Context ctx) throws IOException, SQLException{
+    public static void setPrivacyHtml(final Context ctx) throws IOException, SQLException {
         if (Auth.isUserAdmin(ctx)) {
             final PrivacyInfo toUpdate = ctx.bodyAsClass(PrivacyInfo.class);
             Files.writeString(PRIVACY_HTML, toUpdate.html(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);

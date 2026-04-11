@@ -12,10 +12,10 @@ package de.OneManProjects;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,17 +30,24 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import de.OneManProjects.api.*;
-import de.OneManProjects.data.dto.*;
+import de.OneManProjects.data.dto.DepInfo;
+import de.OneManProjects.data.dto.Deps;
+import de.OneManProjects.data.dto.PrivacyInfo;
+import de.OneManProjects.data.dto.Response;
 import de.OneManProjects.database.Database;
 import de.OneManProjects.security.Auth;
 import de.OneManProjects.utils.OptionalTypeAdapter;
 import de.OneManProjects.utils.Util;
 import io.javalin.Javalin;
-import io.javalin.http.*;
 import io.javalin.http.ContentType;
+import io.javalin.http.Context;
+import io.javalin.http.HttpStatus;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.json.JsonMapper;
-import io.javalin.openapi.*;
+import io.javalin.openapi.HttpMethod;
+import io.javalin.openapi.OpenApi;
+import io.javalin.openapi.OpenApiContent;
+import io.javalin.openapi.OpenApiResponse;
 import io.javalin.openapi.plugin.OpenApiPlugin;
 import io.javalin.openapi.plugin.swagger.SwaggerPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -60,8 +67,8 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static de.OneManProjects.api.Admins.PRIVACY_HTML;
-import static io.javalin.apibuilder.ApiBuilder.post;
 import static io.javalin.apibuilder.ApiBuilder.get;
+import static io.javalin.apibuilder.ApiBuilder.post;
 
 public class Main {
 
@@ -71,10 +78,10 @@ public class Main {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
         final Optional<Integer> port = Util.getEnvVar("APPLICATION_PORT", Integer::parseInt, false);
-        final Optional<String> AppUrl = Util.getEnvVar("APPLICATION_URL", s->s, true);
+        final Optional<String> AppUrl = Util.getEnvVar("APPLICATION_URL", s -> s, true);
         final boolean DEBUG = Boolean.getBoolean("debug");
 
-        try{
+        try {
             Database.initDataBase();
         } catch (final SQLException e) {
             System.out.println(e.getMessage());
@@ -88,19 +95,22 @@ public class Main {
     public static Javalin createJavalinApp(final boolean DEBUG, final Optional<String> AppUrl) {
 
         final Gson gson = new GsonBuilder()
-        .registerTypeAdapter(
-                new TypeToken<Optional<Timestamp>>() {}.getType(),
-                new OptionalTypeAdapter<>(new Gson().getAdapter(Timestamp.class))
-        )
-        .registerTypeAdapter(
-                new TypeToken<Optional<Integer>>() {}.getType(),
-                new OptionalTypeAdapter<>(new Gson().getAdapter(Integer.class))
-        )
                 .registerTypeAdapter(
-                        new TypeToken<Optional<String>>() {}.getType(),
+                        new TypeToken<Optional<Timestamp>>() {
+                        }.getType(),
+                        new OptionalTypeAdapter<>(new Gson().getAdapter(Timestamp.class))
+                )
+                .registerTypeAdapter(
+                        new TypeToken<Optional<Integer>>() {
+                        }.getType(),
+                        new OptionalTypeAdapter<>(new Gson().getAdapter(Integer.class))
+                )
+                .registerTypeAdapter(
+                        new TypeToken<Optional<String>>() {
+                        }.getType(),
                         new OptionalTypeAdapter<>(new Gson().getAdapter(String.class))
                 )
-        .create();
+                .create();
 
         final JsonMapper gsonMapper = new JsonMapper() {
             @NotNull
@@ -131,8 +141,15 @@ public class Main {
             });
             config.jsonMapper(gsonMapper);
             config.registerPlugin(new OpenApiPlugin(openConfig ->
-                    openConfig.withDocumentationPath("/openapi")
-                            .withPrettyOutput()));
+                    openConfig
+                            .withDocumentationPath("/openapi")
+                            .withPrettyOutput()
+                            .withDefinitionConfiguration((version, definition) -> {
+                                definition
+                                        .withCookieAuth("jwtCookie", "jwt")
+                                        .withBearerAuth("Authorization");
+                            })
+            ));
             config.registerPlugin(new SwaggerPlugin());
 
             config.staticFiles.add(staticFiles -> {
@@ -160,6 +177,8 @@ public class Main {
                 post("api/login/token", ctx -> runAction(ctx, Logins::resetPasswordByToken, false));
                 post("api/login/check", ctx -> runAction(ctx, Logins::validToken, false));
                 get("api/refresh", ctx -> runAction(ctx, Logins::refresh, false));
+                get("api/validate", ctx -> runAction(ctx, Logins::validate, true));
+
                 post("api/start", ctx -> runAction(ctx, Users::startTracking, true));
                 post("api/stop", ctx -> runAction(ctx, Users::stopTracking, true));
                 post("api/add", ctx -> runAction(ctx, Users::addPersonalProject, true));
@@ -173,17 +192,19 @@ public class Main {
                 post("api/export", ctx -> runAction(ctx, Users::exportData, true));
                 post("api/archive", ctx -> runAction(ctx, Users::archiveProject, true));
                 post("api/comment", ctx -> runAction(ctx, Users::updateComment, true));
+                get("api/role", ctx -> runAction(ctx, Users::getUserRole, true));
+                get("api/archived", ctx -> runAction(ctx, Users::getUserArchivedProjects, true));
+                get("api/projects", ctx -> runAction(ctx, Users::getUserProjects, true));
+
                 post("api/user/updatePassword", ctx -> runAction(ctx, Users::updatePassword, true));
                 post("api/user/changeMail", ctx -> runAction(ctx, Users::updateUserMail, true));
                 post("api/user/createToken", ctx -> runAction(ctx, Users::createUserApiToken, true));
                 post("api/user/deleteToken", ctx -> runAction(ctx, Users::deleteToken, true));
-                get("api/role", ctx -> runAction(ctx, Users::getUserRole, true));
-                get("api/archived", ctx -> runAction(ctx, Users::getUserArchivedProjects, true));
-                get("api/projects", ctx -> runAction(ctx, Users::getUserProjects, true));
                 get("api/user/leaveGroup", ctx -> runAction(ctx, Groups::userLeaveGroup, true));
                 get("api/user/data", ctx -> runAction(ctx, Users::getUserData, true));
                 get("api/user/delete", ctx -> runAction(ctx, Users::deleteAccount, true));
                 get("api/user/listTokens", ctx -> runAction(ctx, Users::getUserTokens, true));
+
                 post("api/group/create", ctx -> runAction(ctx, Groups::groupUserCreateGroup, true));
                 post("api/group/update", ctx -> runAction(ctx, Groups::groupUpdate, true));
                 post("api/group/invite", ctx -> runAction(ctx, Groups::groupUserInvite, true));
@@ -195,13 +216,14 @@ public class Main {
                 post("api/group/data", ctx -> runAction(ctx, Groups::getGroupDataToAnalyse, true));
                 post("api/group/export", ctx -> runAction(ctx, Groups::exportData, true));
                 get("api/group", ctx -> runAction(ctx, Groups::getManagedGroups, true));
+
                 post("api/admin/invite", ctx -> runAction(ctx, Admins::adminAddNewUser, true));
                 post("api/admin/updateRole", ctx -> runAction(ctx, Admins::adminUpdateRoles, true));
                 post("api/admin/deleteUser", ctx -> runAction(ctx, Admins::adminDeleteUser, true));
                 post("api/admin/deleteGroup", ctx -> runAction(ctx, Admins::adminDeleteGroup, true));
                 post("api/admin/setPrivacy", ctx -> runAction(ctx, Admins::setPrivacyHtml, true));
                 get("api/admin", ctx -> runAction(ctx, Admins::getAdminData, true));
-                get("api/validate", ctx -> runAction(ctx, Logins::validate, true));
+
                 get("api/info", ctx -> runAction(ctx, Main::getDepInfo, false));
                 get("api/version", ctx -> runAction(ctx, Main::getVersion, false));
                 get("api/privacy", ctx -> runAction(ctx, Main::getPrivacyInfo, false));
@@ -223,7 +245,7 @@ public class Main {
         Responses.setResponseOrError(ctx, Util.getVersionInfo());
     }
 
-    private static void runAction(final Context ctx, final Action func, final boolean authRequired){
+    private static void runAction(final Context ctx, final Action func, final boolean authRequired) {
         if (authRequired) {
             if (!Auth.validateToken(ctx)) {
                 ctx.status(HttpStatus.UNAUTHORIZED);
@@ -248,11 +270,11 @@ public class Main {
         ) {
             return reader.lines().skip(1).map(line -> Arrays.asList(line.split(",")))
                     .map(l -> {
-                                final String[] moduleName = l.get(0).substring(1, l.get(0).length()-1).split("@");
-                                return moduleName.length == 3 ?
-                                new Deps( moduleName[1], moduleName[2], l.get(3).replace("\"",""), l.get(1).replace("\"",""))
-                                        : new Deps( moduleName[0], moduleName[1], l.get(3).replace("\"",""), l.get(1).replace("\"",""));
-                            }).toList();
+                        final String[] moduleName = l.get(0).substring(1, l.get(0).length() - 1).split("@");
+                        return moduleName.length == 3 ?
+                                new Deps(moduleName[1], moduleName[2], l.get(3).replace("\"", ""), l.get(1).replace("\"", ""))
+                                : new Deps(moduleName[0], moduleName[1], l.get(3).replace("\"", ""), l.get(1).replace("\"", ""));
+                    }).toList();
         }
     }
 
