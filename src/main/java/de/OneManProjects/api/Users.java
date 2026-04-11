@@ -631,7 +631,7 @@ public class Users {
             summary = "Stop Tracking",
             tags = {"User"},
             operationId = "user stopTracking",
-            path = "/api/user/stopTracking",
+            path = "/api/user/stop",
             methods = HttpMethod.POST,
             security = {
                     @OpenApiSecurity(name = "jwtCookie"),
