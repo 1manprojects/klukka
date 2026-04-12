@@ -12,10 +12,10 @@ package de.OneManProjects.database;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -77,7 +77,7 @@ public class Users {
 
     public static Optional<String> getUserHash(final String mail) throws SQLException {
         return Database.executeQuery(
-                "SELECT hash FROM "+ Database.USERS_TABLE + " WHERE email = ?",
+                "SELECT hash FROM " + Database.USERS_TABLE + " WHERE email = ?",
                 rs -> rs.getString("hash"),
                 mail
         );
@@ -85,7 +85,7 @@ public class Users {
 
     public static Optional<User> getUserInfo(final int id) throws SQLException {
         return Database.executeQuery(
-                "SELECT * FROM "+ Database.USERS_TABLE +" WHERE id = ?",
+                "SELECT * FROM " + Database.USERS_TABLE + " WHERE id = ?",
                 Users::parseUser,
                 id
         );
@@ -104,13 +104,16 @@ public class Users {
                 user.mail(), Auth.hashPassword(pass)
         );
         if (userId >= 0) {
-            setNewUserRole(userId, user.roles());
+            final boolean roleResult = setNewUserRole(userId, user.roles());
+            if (!roleResult) {
+                throw new SQLException(String.format("Could not update UserRole for User %s with Roles %s", user.id(), user.roles()));
+            }
             return userId > 0;
         }
         return false;
     }
 
-    public static boolean setNewUserRole(final int userId, final List<Role> roles) throws SQLException {
+    public static boolean setNewUserRole(final int userId, final List<Role> roles) {
         return roles.stream().allMatch(role ->
         {
             try {
@@ -132,7 +135,7 @@ public class Users {
         return (deleteRoles(userId, toDel) && addRoles(userId, toAdd));
     }
 
-    private static boolean deleteRoles(final int userId, final List<Role> roles) throws SQLException {
+    private static boolean deleteRoles(final int userId, final List<Role> roles) {
         return roles.stream().allMatch(role ->
         {
             try {
@@ -147,7 +150,7 @@ public class Users {
         });
     }
 
-    private static boolean addRoles(final int userId, final List<Role> roles) throws SQLException {
+    private static boolean addRoles(final int userId, final List<Role> roles) {
         return roles.stream().allMatch(role ->
         {
             try {

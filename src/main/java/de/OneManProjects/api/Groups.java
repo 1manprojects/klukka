@@ -44,9 +44,6 @@ import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -91,12 +88,7 @@ public class Groups {
     }
 
     private static String getExportFilename(final DataFilter df, final String groupName) {
-        final Instant start = Instant.parse(df.start());
-        final Instant end = Instant.parse(df.start());
-        final LocalDate date1 = start.atZone(ZoneId.systemDefault()).toLocalDate();
-        final LocalDate date2 = end.atZone(ZoneId.systemDefault()).toLocalDate();
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd_MM_yyyy");
-        return "Export-" + groupName.replace(" ", "_") + "-" + formatter.format(date1) + "-" + formatter.format(date2) + ".csv";
+        return groupName.replace(" ", "_") + "-" + de.OneManProjects.api.Users.getExportFilename(df);
     }
 
     @OpenApi(
@@ -126,8 +118,8 @@ public class Groups {
                 final int userId = Auth.getUserFromContext(ctx);
                 final Optional<Group> group = de.OneManProjects.database.Groups.getGroup(filter.groupId().get(), userId);
                 if (group.isPresent()) {
-                    final byte[] data = Exporter.exportGroupData(filter, group.get().getId());
-                    final String fileName = getExportFilename(filter.filter(), group.get().getTitle());
+                    final byte[] data = Exporter.exportGroupData(filter, group.get().id());
+                    final String fileName = getExportFilename(filter.filter(), group.get().title());
                     ctx.header("export", fileName);
                     ctx.header("Content-Disposition", "attachment; filename=" + fileName);
                     ctx.contentType("text/csv");
@@ -165,7 +157,7 @@ public class Groups {
             final DataFilter filter = ctx.bodyAsClass(DataFilter.class);
             if (filter.groupId().isPresent()) {
                 final Optional<de.OneManProjects.data.Group> group = de.OneManProjects.database.Groups.getGroup(filter.groupId().get(), userId);
-                if (group.isPresent() && group.get().getOwner() == userId) {
+                if (group.isPresent() && group.get().owner() == userId) {
                     final List<Project> groupProjects = Projects.getGroupProjects(filter.groupId().get(), true);
                     final List<Integer> groupProjectIds = groupProjects.stream().map(Project::getId).toList();
                     final List<Tracked> tracked = Projects.getGroupTrackedForRange(groupProjectIds, Instant.parse(filter.start()), Instant.parse(filter.end()));
@@ -276,7 +268,7 @@ public class Groups {
                     final boolean res = de.OneManProjects.database.Groups.addUserToGroup(groupToUser.groupId(), id.get());
                     final Optional<String> userMail = Users.getUserMail(id.get());
                     if (res && userMail.isPresent()) {
-                        Mail.sendGroupInvite(userMail.get(), group.get().getTitle());
+                        Mail.sendGroupInvite(userMail.get(), group.get().title());
                         Responses.setResponseOrError(ctx, "Invite sent");
                         return;
                     }
@@ -387,7 +379,7 @@ public class Groups {
             final int userID = Auth.getUserFromContext(ctx);
             final de.OneManProjects.data.Group group = ctx.bodyAsClass(de.OneManProjects.data.Group.class);
             boolean res = false;
-            if (canUserManageGroup(userID, group.getId())) {
+            if (canUserManageGroup(userID, group.id())) {
                 res = de.OneManProjects.database.Groups.updateGroup(group, userID);
             }
             Responses.setResponseOrError(ctx, res);

@@ -206,7 +206,7 @@ public class Users {
         }
     }
 
-    private static String getExportFilename(final DataFilter df) {
+    public static String getExportFilename(final DataFilter df) {
         final Instant start = Instant.parse(df.start());
         final Instant end = Instant.parse(df.start());
         final LocalDate date1 = start.atZone(ZoneId.systemDefault()).toLocalDate();
@@ -568,12 +568,12 @@ public class Users {
     public static void startTracking(final Context ctx) throws SQLException {
         final Start start = ctx.bodyAsClass(Start.class);
         final int userID = Auth.getUserFromContext(ctx);
-        final Optional<Project> p = Projects.getProjectById(start.getProjectID());
+        final Optional<Project> p = Projects.getProjectById(start.projectID());
         if (p.isPresent()) {
             final Optional<Tracked> current = Projects.getActiveTracking(userID);
             if (current.isEmpty()) {
                 final int res = Projects.addTracking(new Tracked(
-                        -1, userID, start.getProjectID(), Timestamp.from(Instant.now()), start.getTimeZone()
+                        -1, userID, start.projectID(), Timestamp.from(Instant.now()), start.timeZone()
                 ));
                 Responses.setResponseOrError(ctx, res > 0);
             } else {
