@@ -74,7 +74,7 @@ public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static void main(final String[] args) {
+    static void main() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
         final Optional<Integer> port = Util.getEnvVar("APPLICATION_PORT", Integer::parseInt, false);
@@ -126,29 +126,25 @@ public class Main {
             }
         };
 
-        final Javalin app = Javalin.create(config -> {
-            config.bundledPlugins.enableCors(cors -> {
-                cors.addRule(it -> {
-                    if (DEBUG) {
-                        it.allowHost("http://localhost:3000");
-                    } else {
-                        it.allowHost(AppUrl.orElseThrow());
-                    }
-                    it.allowCredentials = true;
-                    it.exposeHeader("x-server");
-                    it.exposeHeader("Content-Disposition");
-                });
-            });
+        return Javalin.create(config -> {
+            config.bundledPlugins.enableCors(cors -> cors.addRule(it -> {
+                if (DEBUG) {
+                    it.allowHost("http://localhost:3000");
+                } else {
+                    it.allowHost(AppUrl.orElseThrow());
+                }
+                it.allowCredentials = true;
+                it.exposeHeader("x-server");
+                it.exposeHeader("Content-Disposition");
+            }));
             config.jsonMapper(gsonMapper);
             config.registerPlugin(new OpenApiPlugin(openConfig ->
                     openConfig
                             .withDocumentationPath("/openapi")
                             .withPrettyOutput()
-                            .withDefinitionConfiguration((version, definition) -> {
-                                definition
-                                        .withCookieAuth("jwtCookie", "jwt")
-                                        .withBearerAuth("Authorization");
-                            })
+                            .withDefinitionConfiguration((version, definition) -> definition
+                                    .withCookieAuth("jwtCookie", "jwt")
+                                    .withBearerAuth("Authorization"))
             ));
             config.registerPlugin(new SwaggerPlugin());
 
@@ -229,7 +225,6 @@ public class Main {
                 get("api/privacy", ctx -> runAction(ctx, Main::getPrivacyInfo, false));
             });
         });
-        return app;
     }
 
     @OpenApi(

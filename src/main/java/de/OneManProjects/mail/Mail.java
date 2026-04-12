@@ -12,10 +12,10 @@ package de.OneManProjects.mail;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,26 +27,24 @@ package de.OneManProjects.mail;
  */
 
 import de.OneManProjects.utils.Util;
-
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Properties;
-
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 
+import java.util.Optional;
+import java.util.Properties;
+
 public class Mail {
 
-    private static void sendMail(final String messageBody, final String subject, final String receiver) throws IOException, MessagingException {
-        final Optional<String> smptHost = Util.getEnvVar("SMTP_HOST", s->s, true);
-        final Optional<String> smptPort = Util.getEnvVar("SMTP_PORT", s->s, true);
-        final Optional<String> smptAuth = Util.getEnvVar("SMTP_AUTH", s->s, true);
-        final Optional<String> smptssl = Util.getEnvVar("SMTP_SSL", s->s, true);
-        final Optional<String> smptUser = Util.getEnvVar("SMTP_USER", s->s, true);
-        final Optional<String> stmpPass = Util.getEnvVar("SMTP_PASSWORD", s->s, true);
+    private static void sendMail(final String messageBody, final String subject, final String receiver) throws MessagingException {
+        final Optional<String> smptHost = Util.getEnvVar("SMTP_HOST", s -> s, true);
+        final Optional<String> smptPort = Util.getEnvVar("SMTP_PORT", s -> s, true);
+        final Optional<String> smptAuth = Util.getEnvVar("SMTP_AUTH", s -> s, true);
+        final Optional<String> smptssl = Util.getEnvVar("SMTP_SSL", s -> s, true);
+        final Optional<String> smptUser = Util.getEnvVar("SMTP_USER", s -> s, true);
+        final Optional<String> stmpPass = Util.getEnvVar("SMTP_PASSWORD", s -> s, true);
 
         final Properties props = new Properties();
         props.put("mail.smtp.auth", smptAuth.get());
@@ -75,8 +73,8 @@ public class Mail {
         Transport.send(message);
     }
 
-    public static void sendInvite(final String newUserMail, final String userPassword) throws MessagingException, IOException {
-        final Optional<String> url = Util.getEnvVar("APPLICATION_URL", s->s, false);
+    public static void sendInvite(final String newUserMail, final String userPassword) throws MessagingException {
+        final Optional<String> url = Util.getEnvVar("APPLICATION_URL", s -> s, false);
         final String inviteMessage = """
                 <html>
                 <head>
@@ -97,13 +95,13 @@ public class Mail {
                 
                 </html>\s""";
         final String userInviteMessage = inviteMessage.replace("{{user.mail}}", newUserMail)
-        .replace("{{user.pass}}", userPassword)
-        .replace("{{domain}}", url.orElse("http//127.0.0.1"));
+                .replace("{{user.pass}}", userPassword)
+                .replace("{{domain}}", url.orElse("http//127.0.0.1"));
         sendMail(userInviteMessage, "Someone invited you to Klukka", newUserMail);
     }
 
-    public static void sendPasswordReset(final String userMail, final String token) throws MessagingException, IOException {
-        final Optional<String> url = Util.getEnvVar("APPLICATION_URL", s->s, false);
+    public static void sendPasswordReset(final String userMail, final String token) throws MessagingException {
+        final Optional<String> url = Util.getEnvVar("APPLICATION_URL", s -> s, false);
         final String resetMessage = """
                 <html>
                 <head>
@@ -121,13 +119,13 @@ public class Mail {
                 
                 </html>\s""";
         final String userResetMessage = resetMessage.replace("{{user.mail}}", userMail)
-        .replace("{{user.resetLink}}", token)
-        .replace("{{domain}}", url.orElse("http//127.0.0.1"));
-        sendMail(userResetMessage,"Reset your password", userMail);
+                .replace("{{user.resetLink}}", token)
+                .replace("{{domain}}", url.orElse("http//127.0.0.1"));
+        sendMail(userResetMessage, "Reset your password", userMail);
     }
 
-    public static void sendGroupInvite(final String newUserMail, final String groupTitle) throws MessagingException, IOException {
-        final Optional<String> url = Util.getEnvVar("APPLICATION_URL", s->s, false);
+    public static void sendGroupInvite(final String newUserMail, final String groupTitle) throws MessagingException {
+        final Optional<String> url = Util.getEnvVar("APPLICATION_URL", s -> s, false);
         final String inviteMessage = """
                 <html>
                 <head>
@@ -144,8 +142,8 @@ public class Mail {
                 
                 </html>\s""";
         final String userGroupInvite = inviteMessage.replace("{{group.title}}", groupTitle)
-        .replace("{{domain}}", url.orElse("http//127.0.0.1"));
-        sendMail(userGroupInvite,"Group Invite", newUserMail);
+                .replace("{{domain}}", url.orElse("http//127.0.0.1"));
+        sendMail(userGroupInvite, "Group Invite", newUserMail);
     }
 
 }

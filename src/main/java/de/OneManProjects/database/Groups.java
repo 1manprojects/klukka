@@ -12,10 +12,10 @@ package de.OneManProjects.database;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -61,8 +61,8 @@ public class Groups {
 
     public static boolean updateGroup(final Group newGroup, final int ownerId) throws SQLException {
         return Database.executeUpdate(
-                "UPDATE " + Database.GROUP_TABLE +" SET title = ?, description = ? WHERE id = ? AND owner = ?",
-                newGroup.getTitle(), newGroup.getDescription(), newGroup.getId(), ownerId
+                "UPDATE " + Database.GROUP_TABLE + " SET title = ?, description = ? WHERE id = ? AND owner = ?",
+                newGroup.title(), newGroup.description(), newGroup.id(), ownerId
         ) > 0;
     }
 
@@ -77,7 +77,7 @@ public class Groups {
 
     public static List<Group> getUserGroups(final int userId) throws SQLException {
         return Database.executeQueryList(
-                "SELECT * FROM "+ Database.GROUP_TABLE + " g JOIN " + Database.GROUP_REF_TABLE + " r ON g.id = r.groupId WHERE idUser = ?",
+                "SELECT * FROM " + Database.GROUP_TABLE + " g JOIN " + Database.GROUP_REF_TABLE + " r ON g.id = r.groupId WHERE idUser = ?",
                 Groups::parseGroup,
                 userId
         );
@@ -85,7 +85,7 @@ public class Groups {
 
     public static List<Group> getManagedGroups(final int ownerId) throws SQLException {
         return Database.executeQueryList(
-                "SELECT * FROM "+ Database.GROUP_TABLE +" WHERE owner = ?",
+                "SELECT * FROM " + Database.GROUP_TABLE + " WHERE owner = ?",
                 Groups::parseGroup,
                 ownerId
         );
@@ -93,7 +93,7 @@ public class Groups {
 
     public static Optional<Group> getGroup(final int groupId, final int ownerId) throws SQLException {
         return Database.executeQuery(
-                "SELECT * FROM "+ Database.GROUP_TABLE +" WHERE id = ? AND owner = ?",
+                "SELECT * FROM " + Database.GROUP_TABLE + " WHERE id = ? AND owner = ?",
                 Groups::parseGroup,
                 groupId, ownerId
         );
@@ -101,35 +101,35 @@ public class Groups {
 
     public static boolean addNewGroup(final Group newGroup, final int ownerId) throws SQLException {
         return Database.executeUpdate(
-                "INSERT INTO "+ Database.GROUP_TABLE +" (title,description,owner) VALUES(?,?,?)",
-                newGroup.getTitle(), newGroup.getDescription(), ownerId
+                "INSERT INTO " + Database.GROUP_TABLE + " (title,description,owner) VALUES(?,?,?)",
+                newGroup.title(), newGroup.description(), ownerId
         ) > 0;
     }
 
     public static boolean deleteGroup(final int groupId, final int userId) throws SQLException {
         return Database.executeUpdate(
-                "DELETE FROM "+ Database.GROUP_TABLE +" WHERE id = ? AND owner = ?",
+                "DELETE FROM " + Database.GROUP_TABLE + " WHERE id = ? AND owner = ?",
                 groupId, userId
         ) > 0;
     }
 
     public static boolean deleteGroup(final int groupId) throws SQLException {
         return Database.executeUpdate(
-                "DELETE FROM "+ Database.GROUP_TABLE +" WHERE id = ?",
+                "DELETE FROM " + Database.GROUP_TABLE + " WHERE id = ?",
                 groupId
         ) > 0;
     }
 
     public static boolean addUserToGroup(final int groupId, final int userId) throws SQLException {
         return Database.executeUpdate(
-                "INSERT INTO "+ Database.GROUP_REF_TABLE +" (idUser,groupId) VALUES(?,?)",
+                "INSERT INTO " + Database.GROUP_REF_TABLE + " (idUser,groupId) VALUES(?,?)",
                 userId, groupId
         ) > 0;
     }
 
     public static boolean removeUserFromGroup(final int groupId, final int userId) throws SQLException {
         return Database.executeUpdate(
-                "DELETE FROM "+ Database.GROUP_REF_TABLE +" WHERE groupId = ? AND idUser = ?",
+                "DELETE FROM " + Database.GROUP_REF_TABLE + " WHERE groupId = ? AND idUser = ?",
                 groupId, userId
         ) > 0;
     }

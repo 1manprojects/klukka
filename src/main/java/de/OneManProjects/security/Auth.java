@@ -12,10 +12,10 @@ package de.OneManProjects.security;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -70,13 +70,9 @@ public class Auth {
         return new String(key);
     }
 
-    private static Algorithm getAlgorithm() {
-        return ALGORITHM;
-    }
-
     private static Optional<DecodedJWT> validateAndDecodeToken(final String token) {
         if (token != null) {
-            final JWTVerifier verifier = JWT.require(getAlgorithm())
+            final JWTVerifier verifier = JWT.require(ALGORITHM)
                     .withIssuer(ISSUER)
                     .withClaimPresence("user")
                     .build();
@@ -91,7 +87,7 @@ public class Auth {
 
     public static void setCookies(final Context ctx, final int userID) throws SQLException {
         final String token = Auth.genJWT(userID);
-        final String refreshToken= Auth.genRefreshToken(userID);
+        final String refreshToken = Auth.genRefreshToken(userID);
         final Cookie ct = new Cookie("jwt", token);
         final Cookie cr = new Cookie("refresh", refreshToken);
         ct.setHttpOnly(true);
@@ -117,8 +113,8 @@ public class Auth {
         final Optional<String> optionalString = Users.getUserHash(login.mail());
         return optionalString.filter(s ->
                 BCrypt.verifyer()
-                    .verify(login.password().toCharArray(), s)
-                    .verified).isPresent();
+                        .verify(login.password().toCharArray(), s)
+                        .verified).isPresent();
     }
 
     public static String genJWT(final int user) {
@@ -126,7 +122,7 @@ public class Auth {
                 .withClaim("user", user)
                 .withExpiresAt(Instant.now().plus(JWT_LIFETIME_SEC, ChronoUnit.SECONDS))
                 .withIssuer(ISSUER)
-                .sign(getAlgorithm());
+                .sign(ALGORITHM);
     }
 
     public static String genRefreshToken(final int user) throws SQLException {
@@ -164,7 +160,7 @@ public class Auth {
         if (dbToken.isPresent()) {
             if (dbToken.get().tokentype().equals(TokenType.REFRESH_TOKEN) && dbToken.get().expiration().isPresent()) {
                 final Timestamp currentTimeStamp = Timestamp.from(Instant.now());
-                if (currentTimeStamp.before(dbToken.get().expiration().get()) ) {
+                if (currentTimeStamp.before(dbToken.get().expiration().get())) {
                     return Optional.of(dbToken.get().user());
                 }
             }
