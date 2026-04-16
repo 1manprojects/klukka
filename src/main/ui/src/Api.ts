@@ -24,7 +24,7 @@
  * #L%
  */
 import { AnalysisData, Tracked } from "./datatypes/final";
-import { AdminData, Login, Project, Role, Start, User, UserProjects, Group, GroupDetails, GroupToUser, IdTupel, DataFilter, ExportFilter, UserData, PasswordReset, ArchiveId, Response as R, UserApiToken, DepInfo, PrivacyInfo } from "./datatypes/types";
+import { AdminData, Login, Project, Role, Start, User, UserProjects, Group, GroupDetails, GroupToUser, IdTupel, DataFilter, ExportFilter, UserData, PasswordReset, ArchiveId, UserApiToken, DepInfo, PrivacyInfo } from "./datatypes/types";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL ?? `${window.location.origin}/api/`;
 
@@ -93,7 +93,7 @@ const runPost = async (method: string, payload: any): Promise<any | null> => {
         }
     }
     if (await checkResponse(response)) {
-        const res: R = JSON.parse(await response.text())
+        const res = JSON.parse(await response.text())
         if (res.payload !== null) {
             return res.payload;
         }
@@ -124,7 +124,7 @@ const runGet = async (method: string): Promise<any | null> => {
         }
     }
     if (await checkResponse(response)) {
-        const res: R = JSON.parse(await response.text())
+        const res = JSON.parse(await response.text())
         if (res.payload !== null) {
             return res.payload;
         }

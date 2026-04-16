@@ -27,7 +27,6 @@ package de.OneManProjects.api;
 
 import de.OneManProjects.data.dto.Login;
 import de.OneManProjects.data.dto.PasswordReset;
-import de.OneManProjects.data.dto.Response;
 import de.OneManProjects.database.Tokens;
 import de.OneManProjects.mail.Mail;
 import de.OneManProjects.security.Auth;
@@ -37,7 +36,6 @@ import io.javalin.http.HttpStatus;
 import io.javalin.openapi.*;
 import jakarta.mail.MessagingException;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -52,7 +50,7 @@ public class Logins {
             path = "/api/refresh",
             methods = HttpMethod.GET,
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class)),
+                    @OpenApiResponse(status = "200", description = "OK"),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED"),
             }
     )
@@ -62,8 +60,6 @@ public class Logins {
         if (userID.isPresent()) {
             Tokens.deleteToken(refreshToken, userID.get());
             Auth.setCookies(ctx, userID.get());
-            final Response response = new Response(true);
-            ctx.json(response);
             ctx.status(HttpStatus.OK);
         } else {
             ctx.status(HttpStatus.UNAUTHORIZED);
@@ -77,7 +73,7 @@ public class Logins {
             path = "/api/logout",
             methods = HttpMethod.GET,
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class)),
+                    @OpenApiResponse(status = "200", description = "OK"),
             }
     )
     public static void logout(final Context ctx) throws SQLException {
@@ -100,7 +96,7 @@ public class Logins {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", description = "OK"),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED"),
                     @OpenApiResponse(status = "406", description = "NOT_ACCEPTABLE")
             }
@@ -111,9 +107,7 @@ public class Logins {
             final Optional<Integer> userID = de.OneManProjects.database.Users.getUserID(login.mail());
             if (userID.isPresent()) {
                 Auth.setCookies(ctx, userID.get());
-                final Response response = new Response(true);
                 ctx.status(HttpStatus.OK);
-                ctx.json(response);
             } else {
                 ctx.status(HttpStatus.NOT_ACCEPTABLE);
             }
@@ -134,18 +128,21 @@ public class Logins {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-                    @OpenApiResponse(status = "204", description = "NO_CONTENT")
+                    @OpenApiResponse(status = "200", description = "OK"),
+                    @OpenApiResponse(status = "406", description = "NOT_ACCEPTABLE"),
+                    @OpenApiResponse(status = "406", description = "BAD_REQUEST")
             }
     )
-    public static void sendResetPasswordLink(final Context ctx) throws SQLException, MessagingException, IOException {
+    public static void sendResetPasswordLink(final Context ctx) throws SQLException, MessagingException {
         final String mail = ctx.bodyAsClass(String.class);
         final Optional<Integer> userId = de.OneManProjects.database.Users.getUserID(mail);
         if (userId.isPresent()) {
             final String token = UUID.randomUUID().toString();
             final boolean result = Tokens.resetPasswordToken(token, userId.get());
             Mail.sendPasswordReset(mail, token);
-            Responses.setResponseOrError(ctx, result);
+            ctx.status(result ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        } else {
+            ctx.status(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -161,18 +158,17 @@ public class Logins {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
-                    @OpenApiResponse(status = "400", content = @OpenApiContent(from = Response.class, example = "{\"payload\":false}")),
-                    @OpenApiResponse(status = "204", description = "NO_CONTENT")
+                    @OpenApiResponse(status = "200", description = "OK"),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED"),
             }
     )
     public static void validToken(final Context ctx) throws SQLException {
         final String token = ctx.bodyAsClass(String.class);
         final Optional<UserToken> userToken = Tokens.getToken(token);
         if (userToken.isPresent()) {
-            Responses.setResponseOrError(ctx, true);
+            ctx.status(HttpStatus.OK);
         } else {
-            Responses.setResponseOrError(ctx, false);
+            ctx.status(HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -188,7 +184,7 @@ public class Logins {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", description = "OK"),
                     @OpenApiResponse(status = "404", description = "NOT_FOUND"),
                     @OpenApiResponse(status = "406", description = "NOT_ACCEPTABLE")
             }
@@ -200,7 +196,7 @@ public class Logins {
             final Optional<String> userMail = de.OneManProjects.database.Users.getUserMail(userToken.get().user());
             if (userMail.isPresent()) {
                 final boolean res = de.OneManProjects.database.Users.updatePassword(userToken.get().user(), Auth.hashPassword(reset.newPassword()));
-                Responses.setResponseOrError(ctx, res);
+                ctx.status(res ? HttpStatus.OK : HttpStatus.NOT_FOUND);
             } else {
                 ctx.status(HttpStatus.NOT_FOUND);
             }
@@ -220,7 +216,7 @@ public class Logins {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED"),
             }
     )

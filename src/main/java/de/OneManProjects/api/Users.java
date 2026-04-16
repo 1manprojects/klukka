@@ -61,7 +61,7 @@ public class Users {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":23}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN"),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
@@ -87,7 +87,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":\"Generated-Token\"}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = StringResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED"),
                     @OpenApiResponse(status = "500", description = "INTERNAL_SERVER_ERROR")
             }
@@ -114,7 +114,7 @@ public class Users {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserApiToken.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserApiTokenResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -140,7 +140,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -167,7 +167,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -188,7 +188,7 @@ public class Users {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserData.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserDataResponse.class)),
                     @OpenApiResponse(status = "204", description = "NO_CONTENT"),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
@@ -265,7 +265,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -295,7 +295,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -322,7 +322,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -349,7 +349,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = AnalysisData.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = AnalysisDataResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -380,7 +380,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -407,7 +407,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -433,7 +433,7 @@ public class Users {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Role.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = RoleResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -454,7 +454,7 @@ public class Users {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserProjects.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserProjectsResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -481,7 +481,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED"),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
@@ -507,7 +507,7 @@ public class Users {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserProjects.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = UserProjectsResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -534,7 +534,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -560,7 +560,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":23}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = IntegerResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED"),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN"),
             }
@@ -596,7 +596,7 @@ public class Users {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Tracked.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = TrackedResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -617,7 +617,7 @@ public class Users {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Double.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = DoubleResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -643,7 +643,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
@@ -670,7 +670,7 @@ public class Users {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Response.class, example = "{\"payload\":true}")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )

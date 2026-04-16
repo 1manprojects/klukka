@@ -67,7 +67,7 @@ public class Admins {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class, example = "true")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -97,7 +97,7 @@ public class Admins {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class, example = "true")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -131,7 +131,7 @@ public class Admins {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class, example = "true")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -162,7 +162,7 @@ public class Admins {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class, example = "true")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -187,7 +187,7 @@ public class Admins {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = AdminData.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = AdminDataResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -210,7 +210,7 @@ public class Admins {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = String.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )

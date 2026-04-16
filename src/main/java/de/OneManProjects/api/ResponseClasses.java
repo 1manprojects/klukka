@@ -4,7 +4,7 @@ package de.OneManProjects.api;
  * #%L
  * Klukka
  * %%
- * Copyright (C) 2025 Nikolai Reed reed@1manprojects.de
+ * Copyright (C) 2025 - 2026 Nikolai Reed reed@1manprojects.de
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,30 +26,50 @@ package de.OneManProjects.api;
  * #L%
  */
 
-import de.OneManProjects.data.dto.Response;
-import io.javalin.http.Context;
-import io.javalin.http.HttpStatus;
+import de.OneManProjects.data.Group;
+import de.OneManProjects.data.Tracked;
+import de.OneManProjects.data.dto.*;
+import de.OneManProjects.data.enums.Role;
+import io.javalin.openapi.OpenApiByFields;
 
-import java.util.Optional;
+import java.util.List;
 
-public class Responses {
-    public static <T> void setResponseOrError(final Context ctx, final Optional<T> data, final boolean allowEmpty) {
-        if (!allowEmpty && data.isEmpty()) {
-            ctx.status(HttpStatus.NO_CONTENT);
-        } else {
-            final Response<T> response = new Response<>(data.orElse(null));
-            ctx.status(HttpStatus.OK);
-            ctx.json(response);
-        }
-    }
+record UserProjectsResponse(UserProjects payload) {
+}
 
-    public static <T> void setResponseOrError(final Context ctx, final T data) {
-        if (data == null) {
-            ctx.status(HttpStatus.NO_CONTENT);
-        } else {
-            final Response<T> response = new Response<>(data);
-            ctx.status(HttpStatus.OK);
-            ctx.json(response);
-        }
-    }
+record GroupDetailsResponse(GroupDetails payload) {
+}
+
+record AnalysisDataResponse(AnalysisData payload) {
+}
+
+record AdminDataResponse(AdminData payload) {
+}
+
+record GroupResponse(Group payload) {
+}
+
+record BooleanResponse(Boolean payload) {
+}
+
+record StringResponse(String payload) {
+}
+
+record UserApiTokenResponse(List<UserApiToken> payload) {
+}
+
+record UserDataResponse(UserData payload) {
+}
+
+record RoleResponse(Role payload) {
+}
+
+record IntegerResponse(Role payload) {
+}
+
+@OpenApiByFields
+record TrackedResponse(Tracked payload) {
+}
+
+record DoubleResponse(double payload) {
 }
