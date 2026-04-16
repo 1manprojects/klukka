@@ -60,7 +60,7 @@ public class Auth {
     private static final Algorithm ALGORITHM = Algorithm.HMAC256(generateSecretKey());
 
     private static String generateSecretKey() {
-        final int size = 50;
+        final int size = 256;
         final char[] ALL_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789^$*.[]{}()?-\"!@#%&/\\,><':;|_~`".toCharArray();
         final Random rand = new SecureRandom();
         final char[] key = new char[size];
@@ -106,6 +106,9 @@ public class Auth {
     }
 
     public static String hashPassword(final String password) {
+        if (password == null || password.isEmpty()) {
+            throw new IllegalArgumentException(("Password cannot be empty or null"));
+        }
         return BCrypt.withDefaults().hashToString(12, password.toCharArray());
     }
 

@@ -164,7 +164,7 @@
                     <licenseName>mit</licenseName>
                     <organizationName>1 Man Projects</organizationName>
                     <projectName>Klukka</projectName>
-                    <copyrightOwners>Nikolai Reed reed@1manprojects.de </copyrightOwners>
+                    <copyrightOwners>Nikolai Reed reed@1manprojects.de</copyrightOwners>
                     <includes>
                         <include>**/*.java</include>
                         <include>**/main/ui/src/**/*.tsx</include>

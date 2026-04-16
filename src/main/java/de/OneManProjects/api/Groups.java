@@ -41,7 +41,6 @@ import io.javalin.http.HttpStatus;
 import io.javalin.openapi.*;
 import jakarta.mail.MessagingException;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -66,7 +65,7 @@ public class Groups {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = GroupDetails.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = GroupDetailsResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -107,7 +106,7 @@ public class Groups {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = GroupDetails.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = GroupDetailsResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -147,7 +146,7 @@ public class Groups {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = GroupDetails.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = GroupDetailsResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -186,7 +185,7 @@ public class Groups {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -217,7 +216,7 @@ public class Groups {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -253,11 +252,11 @@ public class Groups {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = String.class, example = "Invite sent | User does not exist | Error matching user to Group")),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = StringResponse.class, example = "Invite sent | User does not exist | Error matching user to Group")),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void groupUserInvite(final Context ctx) throws SQLException, MessagingException, IOException {
+    public static void groupUserInvite(final Context ctx) throws SQLException, MessagingException {
         if (Auth.isUserGroup(ctx)) {
             final int userID = Auth.getUserFromContext(ctx);
             final GroupToUser groupToUser = ctx.bodyAsClass(GroupToUser.class);
@@ -299,7 +298,7 @@ public class Groups {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -336,7 +335,7 @@ public class Groups {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -370,7 +369,7 @@ public class Groups {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -404,7 +403,7 @@ public class Groups {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
@@ -433,14 +432,14 @@ public class Groups {
                     @OpenApiSecurity(name = "Authorization")
             },
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = de.OneManProjects.data.Group.class)),
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = GroupResponse.class)),
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
     public static void getManagedGroups(final Context ctx) throws SQLException {
         if (Auth.isUserGroup(ctx)) {
             final int userId = Auth.getUserFromContext(ctx);
-            final List<de.OneManProjects.data.Group> groups = de.OneManProjects.database.Groups.getManagedGroups(userId);
+            final List<Group> groups = de.OneManProjects.database.Groups.getManagedGroups(userId);
             Responses.setResponseOrError(ctx, groups);
         } else {
             ctx.status(HttpStatus.FORBIDDEN);
@@ -463,7 +462,7 @@ public class Groups {
                     required = true
             ),
             responses = {
-                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = Boolean.class))
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class))
             }
     )
     public static void userLeaveGroup(final Context ctx) throws SQLException {

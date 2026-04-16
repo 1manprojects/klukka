@@ -11,3 +11,4 @@ src/main/ui/dist/
 /.vscode/
 /data/privacy.html
 .env
+/.ollamassist/
