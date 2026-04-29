@@ -8,36 +8,46 @@
       cursor: pointer;
       box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 
+      &.archived {
+        cursor: default;
+      }
+
       .color {
         height: 100%;
-    }
+      }
 
       .title {
         text-align: left;
         margin-left: auto;
         margin-right: auto;
         font-weight: bold;
-        cursor: pointer;
       }
 
       .desc {
-        cursor: pointer;
         display: grid;
         grid-template-columns: 10% 1fr 1fr 1fr;
 
         .description {
             text-align: left;
-            cursor: pointer;
         }
 
         .tracked {
             text-align: right;
-            cursor: pointer;
         }
 
-        .delete {
-            text-align: right;
+        .actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 8px;
+          cursor: pointer;
+          
+          .delete {
             font-size: 2rem;
+          }
+
+          .archive {
+              font-size: 2rem;
+          }
         }
       }
     }

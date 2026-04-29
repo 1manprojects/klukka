@@ -96,6 +96,15 @@ public class Projects {
         );
     }
 
+    public static List<Project> getArchived(final int refId) throws SQLException {
+        return Database.executeQueryList(
+                "SELECT id,ref,refType,title,description,color,archived FROM " + Database.PROJECT_TABLE +
+                        " WHERE reftype = '" + RefType.USER + "' AND ref = ? AND archived = true",
+                Projects::parseProject,
+                refId
+        );
+    }
+
     public static List<Project> getGroupProjects(final int groupId, final boolean all) throws SQLException {
         return Database.executeQueryList(
                 "SELECT id,ref,refType,title,description,color,archived FROM " + Database.PROJECT_TABLE +

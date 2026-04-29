@@ -45,6 +45,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -513,16 +514,15 @@ public class Users {
     )
     public static void getUserArchivedProjects(final Context ctx) throws SQLException {
         final int userId = Auth.getUserFromContext(ctx);
-        final List<Project> userProjects = Projects.getProjects(userId, true);
-        final List<Project> groupProjects = Projects.getUserGroupProjects(userId);
-        Responses.setResponseOrError(ctx, new UserProjects(userProjects, groupProjects));
+        final List<Project> userProjects = Projects.getArchived(userId);
+        Responses.setResponseOrError(ctx, new UserProjects(userProjects, new ArrayList<>()));
     }
 
     @OpenApi(
             summary = "Add Personal Project",
             tags = {"User"},
             operationId = "user addPersonalProject",
-            path = "/api/user/addPersonalProject",
+            path = "/api/add",
             methods = HttpMethod.POST,
             security = {
                     @OpenApiSecurity(name = "jwtCookie"),
@@ -631,7 +631,7 @@ public class Users {
             summary = "Stop Tracking",
             tags = {"User"},
             operationId = "user stopTracking",
-            path = "/api/user/stop",
+            path = "/api/stop",
             methods = HttpMethod.POST,
             security = {
                     @OpenApiSecurity(name = "jwtCookie"),

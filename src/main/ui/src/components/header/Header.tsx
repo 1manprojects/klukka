@@ -73,6 +73,7 @@ export const Header = (): ReactElement => {
         <div></div>
         <div className={"menu-links " + clazz}>
             <a className={location.pathname === "/myProjects"? "active" : ""} href="myProjects">Projects</a>
+            <a className={location.pathname === "/archived"? "active" : ""} href="archived">Archive</a>
             <a className={location.pathname === "/activity"? "active" : ""} href="activity">Activity</a>
             <a className={location.pathname === "/calendar"? "active" : ""} href="calendar">Calendar</a>
             <a className={location.pathname === "/profile"? "active" : ""} href="profile">Profile</a>

@@ -40,6 +40,7 @@ import { Info } from './components/info/Info';
 import { Footer } from './components/footer/Footer';
 import { Privacy } from './privacy/Privacy';
 import { JSX } from 'react';
+import { Archived } from './components/user/Archived';
 
 function App(): JSX.Element {
 
@@ -77,6 +78,13 @@ function App(): JSX.Element {
         element: <Fragment>
           <Header/>
           <UserProjects/>
+        </Fragment>
+      },
+      {
+        path: "/archived",
+        element: <Fragment>
+          <Header/>
+          <Archived/>
         </Fragment>
       },
       {
