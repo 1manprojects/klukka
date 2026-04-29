@@ -26,10 +26,10 @@
 import { Fragment } from "react/jsx-runtime";
 import { Tracking } from "../tracking/Tracking";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faArchive } from "@fortawesome/free-solid-svg-icons";
 import { Project, UserProjects as P } from "../../datatypes/types";
 import { ReactElement, useEffect, useState } from "react";
-import { getActive, getMonthMins, getProjects, startTracking, stopTracking, userDelProject } from "../../Api";
+import { getActive, getMonthMins, getProjects, setProjectArchive, startTracking, stopTracking } from "../../Api";
 
 import { Add } from "../common/add/Add";
 import { AddProject } from "../common/addProject/AddProject";
@@ -92,12 +92,18 @@ export const UserProjects = (): ReactElement => {
       }
     }
 
-    const deleteProject = async (e: React.MouseEvent, id: number): Promise<void> => {
-      e.stopPropagation();
-      if (confirm("Do you realy want to delete the Project!\nAll tracked data will be deleted!")) {
-        await userDelProject(id);
-        await fetchAndSetData();
-      }
+    const onArchive = async (e: React.MouseEvent, id: number): Promise<void> => {
+        e.stopPropagation();
+        const archiveString = "Do you want to archive this project?\n" +
+            "Archived projects wont be visible in the project list.\n" +
+            "You can unarchive them at any time.";
+
+        if (window.confirm(archiveString)) {
+            const res = await setProjectArchive({archive: true, projectId: id});
+            if (res) {
+                fetchAndSetData();
+            }
+        }
     }
   
     const renderProject = (p: Project): ReactElement => {
@@ -110,7 +116,12 @@ export const UserProjects = (): ReactElement => {
           <div/>
           <label className='description'>{p.description} </label>
           <label className='tracked'>{"tracked: " + MinToStringWithSeconds(p.trackedThisMonth)} </label>
-          <div className="delete"><FontAwesomeIcon icon={faTrashAlt} onClick={(e) => deleteProject(e, p.id)}/></div>
+          <div className="actions">
+            {
+              p.refType === "GROUP" ? null :
+              <div className="archive"><FontAwesomeIcon icon={faArchive} onClick={(e) => onArchive(e, p.id)}/></div>
+            }
+          </div>
         </div>
       </div>
     }

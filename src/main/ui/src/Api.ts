@@ -224,6 +224,11 @@ export const getProjects = async (): Promise<UserProjects | null> => {
     return returnOrNull<UserProjects>(res)
 }
 
+export const getArchived = async (): Promise<UserProjects | null> => {
+    const res = await runGet("archived");
+    return returnOrNull<UserProjects>(res)
+}
+
 export const getActive = async (): Promise<Tracked | null> => {
     const res = await runGet("active");
     return returnOrNull<Tracked>(res)

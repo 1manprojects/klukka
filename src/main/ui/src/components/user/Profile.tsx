@@ -24,11 +24,11 @@
  * #L%
  */
 import { Fragment, ReactElement, useEffect, useState } from "react"
-import { createUserToken, deleteAccount, deleteUserToken, getUserDetails, leaveGroup, setProjectArchive, updateEmail, updatePassword, userDelProject } from "../../Api";
+import { createUserToken, deleteAccount, deleteUserToken, getUserDetails, leaveGroup, updateEmail, updatePassword } from "../../Api";
 import './profile.scss'
 import { Project, UserApiToken, UserData } from "../../datatypes/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBoxArchive, faBoxOpen, faDoorOpen, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faDoorOpen, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { EditProject } from "../common/editProject/EditProject";
 import { getShortDate } from "../../Func";
 
@@ -72,21 +72,6 @@ export const Profile = (): ReactElement => {
         }
     }
 
-    const onArchive = async (e: React.MouseEvent, id: number, archive: boolean): Promise<void> => {
-        e.stopPropagation();
-        const archiveString = !archive ? "Do you want to unarchive the project?" : 
-            "Do you want to archive this project?\n" +
-            "Archived projects wont be visible in the project list.\n" +
-            "You can unarchive them at any time.";
-
-        if (window.confirm(archiveString)) {
-                const res = await setProjectArchive({archive: archive, projectId: id});
-                if (res) {
-                    fetchAndSetData();
-                }
-        }
-    }
-
     const onUpdateMail = async (): Promise<void> => {
         if (isValidEmail(mail.mail)) {
             if (window.confirm("Do you really want to change your mail to "+ mail.mail +"?\n" +
@@ -102,17 +87,6 @@ export const Profile = (): ReactElement => {
             setMail({mail: "", edit: false});
         } else {
             alert("Invalid mail address");
-        }
-    }
-
-    const onDeleteProject = async (e: React.MouseEvent, id: number): Promise<void> => {
-        e.stopPropagation();
-        if (window.confirm("Do you really want to delete this project?\n" +
-            "This action cannot be undone and all data will be lost.")) {
-                const res = await userDelProject(id);
-                if (res) {
-                    fetchAndSetData();
-                }
         }
     }
 
@@ -244,32 +218,6 @@ export const Profile = (): ReactElement => {
                 </table>
             <hr/>
             <div className="project-info">
-                <h2>Projects</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Color</th>
-                            <th>Archive</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.projects.map((project, index) => (
-                            <tr key={index} className={project.archived ? "archived" : ""} onClick={() => { setProject(project.id); setDialog("PROJECT")}}>
-                                <td>{project.title}</td>
-                                <td>{project.description}</td>
-                                <td style={{backgroundColor: project.color}}></td>
-                                <td>{project.archived? 
-                                    <FontAwesomeIcon className="action-icon" title="Unarchive Project" icon={faBoxOpen} onClick={(e)=> onArchive(e, project.id, false)}/>: 
-                                    <FontAwesomeIcon className="action-icon" title="Archive Project" icon={faBoxArchive} onClick={(e)=> onArchive(e, project.id, true)}/>}</td>
-                                <td><FontAwesomeIcon className="action-icon" title="Delete Archive" icon={faTrash} onClick={(e) => onDeleteProject(e, project.id)}/></td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <hr/>
                 <h2>Groups</h2>
                 {data.groups.length === 0 ? <p>You are not in any group</p> : null}
                 <table>
