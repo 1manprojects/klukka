@@ -3,33 +3,42 @@
         margin-left: 2rem;
         margin-right: 2rem;
         margin-top: 2rem;
-        
+
         .rbc-time-slot {
             min-width: 77.6px;
             z-index: 1;
             cursor: pointer;
+            transition: background-color var(--transition-base);
+
             &:hover {
-                background-color: lightblue;
+                background-color: rgba(0, 122, 204, 0.1);
             }
         }
+
         .rbc-event {
             z-index: 3;
             cursor: pointer;
+            transition: border var(--transition-base);
+
             &:hover {
-                border: 3px black solid;
+                border: 2px solid var(--color-primary);
             }
         }
+
         .rbc-event-content {
             display: inline-grid;
             margin: 0.5rem;
             font-size: large;
+
             .rbc-event-comment {
-                font-size: smaller;
+                font-size: var(--font-size-sm);
                 margin-top: 0.3rem;
+                opacity: 0.85;
             }
         }
+
         .rbc-toolbar-label {
-            margin: 1rem;
+            margin: var(--space-md);
         }
     }
 }

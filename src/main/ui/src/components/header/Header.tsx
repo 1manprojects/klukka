@@ -25,7 +25,7 @@
  */
 import { Fragment, ReactElement, useEffect, useState } from "react";
 
-import Logo from '../../logo.svg'
+import Logo from '../../resources/klukka-monogram.svg'
 import { useLocation } from "react-router";
 import { Role } from "../../datatypes/types";
 import { getUserRole, sendLogout } from "../../Api";

@@ -35,6 +35,7 @@ import de.OneManProjects.data.dto.Deps;
 import de.OneManProjects.data.dto.PrivacyInfo;
 import de.OneManProjects.data.dto.Response;
 import de.OneManProjects.database.Database;
+import de.OneManProjects.scheduler.Scheduler;
 import de.OneManProjects.security.Auth;
 import de.OneManProjects.utils.OptionalTypeAdapter;
 import de.OneManProjects.utils.Util;
@@ -87,6 +88,11 @@ public class Main {
             System.out.println(e.getMessage());
             System.exit(2);
         }
+
+        final Scheduler scheduler = new Scheduler();
+        scheduler.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(scheduler::stop));
 
         final Javalin app = createJavalinApp(DEBUG, AppUrl);
         app.start(port.orElse(3001));

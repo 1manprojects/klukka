@@ -118,4 +118,10 @@ public class Tokens {
                 Timestamp.from(Instant.now().plus(Auth.REFRESH_LIFETIME_SEC, ChronoUnit.SECONDS))
         ) > 0;
     }
+
+    public static boolean clearOldTokens() throws SQLException {
+        return Database.executeUpdate(
+                "DELETE FROM " + Database.TOKEN_TABLE + " WHERE token_type = 2 or token_type = 3 and expiration < CURRENT_DATE"
+        ) > 0;
+    }
 }

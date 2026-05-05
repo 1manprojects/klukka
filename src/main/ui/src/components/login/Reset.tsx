@@ -28,7 +28,7 @@ import { ReactElement, useEffect, useState } from "react";
 import './login.scss'
 import { useParams } from "react-router";
 import { checkToken, resetPasswordByToken } from "../../Api";
-import LOGO from '../../resources/Logo.svg';
+import LOGO from '../../resources/svg/klukka-lockup-horizontal-light.svg';
 
 export const Reset = (): ReactElement => {
 

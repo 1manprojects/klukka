@@ -26,7 +26,7 @@
 import { Fragment, ReactElement, useEffect, useState } from "react";
 import { Login as L } from "../../datatypes/types";
 import { resetPassword, runValidate, sendLogin } from "../../Api";
-import LOGO from '../../resources/Logo.svg';
+import LOGO from '../../resources/svg/klukka-lockup-horizontal-light.svg';
 
 import './login.scss'
 import { useNavigate } from "react-router";
