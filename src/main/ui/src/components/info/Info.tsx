@@ -29,6 +29,7 @@ import { getDepInfo } from "../../Api";
 import './info.scss';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import LOGO from '../../resources/svg/klukka-lockup-horizontal-light.svg';
 
 export const Info = (): ReactElement => {
 
@@ -48,6 +49,9 @@ export const Info = (): ReactElement => {
     return (
         <div className="info">
             <h1>Klukka - Timetracking</h1>
+            <div className="logo">
+                <img src={LOGO} alt="Klukka Logo" />
+            </div>
             <h2>1 Man Projects</h2>
             <a href="https://github.com/1manprojects/klukka"><FontAwesomeIcon icon={faGithub}/> Github Repository</a>
             <h3>Licensed under MIT </h3>
