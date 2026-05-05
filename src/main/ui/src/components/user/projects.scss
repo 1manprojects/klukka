@@ -1,5 +1,4 @@
 .projects-list {
-
     .project {
         padding: var(--space-md);
         margin: var(--space-md);
@@ -14,14 +13,13 @@
             background-color: rgba(0, 122, 204, 0.05);
         }
 
-      &.archived {
-        cursor: default;
-      }
+        &.archived {
+            cursor: default;
+        }
 
         .color {
             height: 100%;
         }
-      }
 
         .title {
             text-align: left;
@@ -37,7 +35,7 @@
             .description {
                 text-align: left;
                 color: var(--color-text-secondary);
-                font-style: bold;
+                font-style: italic; // bold is not a valid font-style value
             }
 
             .tracked {
@@ -45,19 +43,18 @@
                 font-weight: 600;
             }
 
-        .actions {
-          display: flex;
-          justify-content: flex-end;
-          gap: 8px;
-          cursor: pointer;
-          
-          .delete {
-                font-size: 2rem;
-          }
+            .actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 8px;
+                cursor: pointer;
 
-          .archive {
-              font-size: 2rem;
-          }
+                .delete {
+                    font-size: 2rem;
+                }
+
+                .archive {
+                    font-size: 2rem;
                 }
             }
         }
