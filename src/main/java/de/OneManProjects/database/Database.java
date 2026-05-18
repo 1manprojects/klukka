@@ -178,7 +178,7 @@ public class Database {
                 "ALTER TABLE " + TRACKING_TABLE +
                         " ADD COLUMN IF NOT EXISTS comment TEXT";
         final String updateTokenColumn =
-                "ALTER TABLE " + TOKEN_TABLE+ " ADD CONSTRAINT tokens_token_unique UNIQUE (token)";
+                "CREATE UNIQUE INDEX IF NOT EXISTS tokens_token_unique ON " + TOKEN_TABLE + " (token)";
         try(final Connection con = getConnection()) {
             try(final Statement st = con.createStatement()) {
                 st.execute(createUserTable);
