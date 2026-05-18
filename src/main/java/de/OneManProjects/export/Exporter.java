@@ -26,6 +26,7 @@ package de.OneManProjects.export;
  * #L%
  */
 
+import com.google.gson.Gson;
 import de.OneManProjects.data.Project;
 import de.OneManProjects.data.Tracked;
 import de.OneManProjects.data.dto.ExportFilter;
@@ -171,5 +172,17 @@ public class Exporter {
         } else {
             return exportCsv(tracked, new ArrayList<>(), groupProjects);
         }
+    }
+
+    public static byte[] exportUserData(final int userId) throws SQLException {
+        final List<Project> userProjects = Projects.getProjects(userId, true);
+        final List<Tracked> trackedList = Projects.getTracked(userId);
+        Gson gson = new Gson();
+        String json = gson.toJson(new UserDataExport(userProjects, trackedList));
+        return json.getBytes(StandardCharsets.UTF_8);
+    }
+
+    public static void userDataImport(final int userId, final UserDataExport toImport) {
+
     }
 }

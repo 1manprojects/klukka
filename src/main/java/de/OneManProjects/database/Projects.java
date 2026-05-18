@@ -186,6 +186,14 @@ public class Projects {
         );
     }
 
+    public static List<Tracked> getTracked(final int userId) throws SQLException {
+        return Database.executeQueryList(
+                "SELECT * FROM " + Database.TRACKING_TABLE + " WHERE idUser = ?",
+                Projects::parseTracked,
+                userId
+        );
+    }
+
     public static List<Tracked> getGroupTrackedForRange(final List<Integer> groupProjectIds, final Instant start, final Instant end) throws SQLException {
         final Timestamp fromStart = Timestamp.from(start);
         final Timestamp fromEnd = Timestamp.from(end);

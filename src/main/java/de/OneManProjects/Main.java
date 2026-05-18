@@ -206,6 +206,7 @@ public class Main {
                 get("api/user/data", ctx -> runAction(ctx, Users::getUserData, true));
                 get("api/user/delete", ctx -> runAction(ctx, Users::deleteAccount, true));
                 get("api/user/listTokens", ctx -> runAction(ctx, Users::getUserTokens, true));
+                get("api/user/export", ctx -> runAction(ctx, Users::exportUserData, true));
 
                 post("api/group/create", ctx -> runAction(ctx, Groups::groupUserCreateGroup, true));
                 post("api/group/update", ctx -> runAction(ctx, Groups::groupUpdate, true));

@@ -693,4 +693,31 @@ public class Users {
         final boolean res = de.OneManProjects.database.Users.updatePassword(userID, Auth.hashPassword(newPass));
         Responses.setResponseOrError(ctx, res);
     }
+
+    @OpenApi(
+            summary = "Export User Data",
+            tags = {"User"},
+            operationId = "user export",
+            path = "/api/user/export",
+            methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            responses = {
+                    @OpenApiResponse(
+                            status = "200",
+                            content = @OpenApiContent(
+                                    type = "application/octet-stream",
+                                    mimeType = "application/json"
+                            )
+                    ),@OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
+    )
+    public static void exportUserData(final Context ctx) throws SQLException, IllegalAccessException {
+        final int userID = Auth.getUserFromContext(ctx);
+        ctx.header("Content-Disposition", "attachment; filename=\"user-export.json\"");
+        ctx.contentType("application/json");
+        ctx.result(Exporter.exportUserData(userID));
+    }
 }
