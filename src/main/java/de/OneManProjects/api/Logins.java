@@ -76,7 +76,7 @@ public class Logins {
                     @OpenApiResponse(status = "200", description = "OK"),
             }
     )
-    public static void logout(final Context ctx) throws SQLException {
+    public static void logout(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = Auth.getUserFromContext(ctx);
         ctx.removeCookie("jwt", "/api");
         ctx.removeCookie("refresh", "/api");

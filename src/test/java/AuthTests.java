@@ -111,7 +111,7 @@ public class AuthTests {
     }
 
     @Test
-    void testGetUserFromContextWithCookie() {
+    void testGetUserFromContextWithCookie() throws IllegalAccessException {
         final Context ctx = mock(Context.class);
         final String jwt = Auth.genJWT(123);
         when(ctx.cookieMap()).thenReturn(java.util.Map.of("jwt", "dummy"));
@@ -122,7 +122,7 @@ public class AuthTests {
     }
 
     @Test
-    void testGetUserFromContextWithApiToken() throws SQLException {
+    void testGetUserFromContextWithApiToken() throws SQLException, IllegalAccessException {
         final Context ctx = mock(Context.class);
         when(ctx.cookieMap()).thenReturn(java.util.Map.of());
         when(ctx.header("Authorization")).thenReturn("Bearer testToken");
@@ -137,7 +137,7 @@ public class AuthTests {
     }
 
     @Test
-    void testIsUserAdmin() throws SQLException {
+    void testIsUserAdmin() throws SQLException, IllegalAccessException {
         final Context ctx = mock(Context.class);
         final String jwt = Auth.genJWT(1);
         when(ctx.cookieMap()).thenReturn(java.util.Map.of("jwt", "dummy"));
@@ -161,6 +161,8 @@ public class AuthTests {
             dbMock.when(() -> Users.getUserRoles(2))
                   .thenReturn(List.of(Role.GROUP));
             assertTrue(Auth.isUserGroup(ctx));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 

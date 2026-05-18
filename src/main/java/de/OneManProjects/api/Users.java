@@ -67,7 +67,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void deleteAccount(final Context ctx) throws SQLException {
+    public static void deleteAccount(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = Auth.getUserFromContext(ctx);
         Responses.setResponseOrError(ctx, Projects.deleteAllUserProjects(userId) && de.OneManProjects.database.Users.deleteUser(userId));
     }
@@ -93,15 +93,28 @@ public class Users {
                     @OpenApiResponse(status = "500", description = "INTERNAL_SERVER_ERROR")
             }
     )
-    public static void createUserApiToken(final Context ctx) throws SQLException {
+    public static void createUserApiToken(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = Auth.getUserFromContext(ctx);
         final UserApiToken userApiToken = ctx.bodyAsClass(UserApiToken.class);
-        final String apiToken = Auth.generateApiToken();
-        if (Tokens.addUserApiToken(userId, apiToken, userApiToken.description(), userApiToken.expiration())) {
-            Responses.setResponseOrError(ctx, apiToken);
-        } else {
-            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
+        for (int i = 0; i < 5; i++) {
+            try {
+                final String apiToken = Auth.generateApiToken();
+                if (Tokens.addUserApiToken(userId, apiToken, userApiToken.description(), userApiToken.expiration())) {
+                    Responses.setResponseOrError(ctx, apiToken);
+                    return;
+                }
+            } catch (final SQLException e) {
+                if (isUniqueConstraintViolation(e)) {
+                    continue;
+                }
+                throw e;
+            }
         }
+        ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private static boolean isUniqueConstraintViolation(final SQLException e) {
+        return e.getSQLState().startsWith("23");
     }
 
     @OpenApi(
@@ -119,7 +132,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void getUserTokens(final Context ctx) throws SQLException {
+    public static void getUserTokens(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = Auth.getUserFromContext(ctx);
         final List<UserApiToken> tokens = Tokens.getUserApiTokens(userId);
         Responses.setResponseOrError(ctx, tokens);
@@ -145,7 +158,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void deleteToken(final Context ctx) throws SQLException {
+    public static void deleteToken(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = Auth.getUserFromContext(ctx);
         final int tokenId = ctx.bodyAsClass(Integer.class);
         final boolean res = Tokens.deleteUserToken(userId, tokenId);
@@ -172,7 +185,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void updateUserMail(final Context ctx) throws SQLException {
+    public static void updateUserMail(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = Auth.getUserFromContext(ctx);
         final String newMail = ctx.bodyAsClass(String.class);
         Responses.setResponseOrError(ctx, de.OneManProjects.database.Users.updateUserMail(userId, newMail));
@@ -194,7 +207,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void getUserData(final Context ctx) throws SQLException {
+    public static void getUserData(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = Auth.getUserFromContext(ctx);
         final List<Project> projects = Projects.getProjects(userId, true);
         final Optional<User> user = de.OneManProjects.database.Users.getUserInfo(userId);
@@ -236,7 +249,7 @@ public class Users {
                     @OpenApiResponse(status = "503", description = "SERVICE_UNAVAILABLE")
             }
     )
-    public static void exportData(final Context ctx) throws SQLException {
+    public static void exportData(final Context ctx) throws SQLException, IllegalAccessException {
         final ExportFilter filter = ctx.bodyAsClass(ExportFilter.class);
         final int userId = Auth.getUserFromContext(ctx);
         if (userId > -1) {
@@ -270,7 +283,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void archiveProject(final Context ctx) throws SQLException {
+    public static void archiveProject(final Context ctx) throws SQLException, IllegalAccessException {
         final ArchiveId archiveId = ctx.bodyAsClass(ArchiveId.class);
         final int userID = Auth.getUserFromContext(ctx);
         boolean res = false;
@@ -300,7 +313,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void updateTracking(final Context ctx) throws SQLException {
+    public static void updateTracking(final Context ctx) throws SQLException, IllegalAccessException {
         final Tracked tracked = ctx.bodyAsClass(Tracked.class);
         final int userID = Auth.getUserFromContext(ctx);
         final boolean res = Projects.updateTracking(tracked, userID);
@@ -327,7 +340,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void updateComment(final Context ctx) throws SQLException {
+    public static void updateComment(final Context ctx) throws SQLException, IllegalAccessException {
         final CommentUpdate tracked = ctx.bodyAsClass(CommentUpdate.class);
         final int userID = Auth.getUserFromContext(ctx);
         final boolean res = Projects.updateComment(tracked.id(), userID, tracked.comment());
@@ -354,7 +367,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void getDataToAnalyse(final Context ctx) throws SQLException {
+    public static void getDataToAnalyse(final Context ctx) throws SQLException, IllegalAccessException {
         final DataFilter filter = ctx.bodyAsClass(DataFilter.class);
         final int userId = Auth.getUserFromContext(ctx);
         if (userId > -1) {
@@ -385,7 +398,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void deleteTracking(final Context ctx) throws SQLException {
+    public static void deleteTracking(final Context ctx) throws SQLException, IllegalAccessException {
         final int id = ctx.bodyAsClass(Integer.class);
         final int userID = Auth.getUserFromContext(ctx);
         final boolean res = Projects.deleteTracking(id, userID);
@@ -412,7 +425,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void deleteUserProject(final Context ctx) throws SQLException {
+    public static void deleteUserProject(final Context ctx) throws SQLException, IllegalAccessException {
         final int idToDel = ctx.bodyAsClass(Integer.class);
         final int userId = Auth.getUserFromContext(ctx);
         final Optional<Project> p = Projects.getProjectById(idToDel);
@@ -438,7 +451,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void getUserRole(final Context ctx) throws SQLException {
+    public static void getUserRole(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = Auth.getUserFromContext(ctx);
         final List<Role> roles = de.OneManProjects.database.Users.getUserRoles(userId);
         Responses.setResponseOrError(ctx, Role.getHighestRole(roles));
@@ -459,7 +472,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void getUserProjects(final Context ctx) throws SQLException {
+    public static void getUserProjects(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = Auth.getUserFromContext(ctx);
         final List<Project> userProjects = Projects.getProjects(userId, false);
         final List<Project> groupProjects = Projects.getUserGroupProjects(userId);
@@ -487,7 +500,7 @@ public class Users {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void updateProject(final Context ctx) throws SQLException {
+    public static void updateProject(final Context ctx) throws SQLException, IllegalAccessException {
         final Project toUpdate = ctx.bodyAsClass(Project.class);
         final int userId = Auth.getUserFromContext(ctx);
         if (Projects.canUserManageProject(userId, toUpdate.getId())) {
@@ -512,7 +525,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void getUserArchivedProjects(final Context ctx) throws SQLException {
+    public static void getUserArchivedProjects(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = Auth.getUserFromContext(ctx);
         final List<Project> userProjects = Projects.getArchived(userId);
         Responses.setResponseOrError(ctx, new UserProjects(userProjects, new ArrayList<>()));
@@ -538,7 +551,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void addPersonalProject(final Context ctx) throws SQLException {
+    public static void addPersonalProject(final Context ctx) throws SQLException, IllegalAccessException {
         final Project project = ctx.bodyAsClass(Project.class);
         final int userId = Auth.getUserFromContext(ctx);
         Responses.setResponseOrError(ctx, Projects.addProject(project, userId));
@@ -565,7 +578,7 @@ public class Users {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN"),
             }
     )
-    public static void startTracking(final Context ctx) throws SQLException {
+    public static void startTracking(final Context ctx) throws SQLException, IllegalAccessException {
         final Start start = ctx.bodyAsClass(Start.class);
         final int userID = Auth.getUserFromContext(ctx);
         final Optional<Project> p = Projects.getProjectById(start.projectID());
@@ -600,7 +613,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void getActive(final Context ctx) throws SQLException {
+    public static void getActive(final Context ctx) throws SQLException, IllegalAccessException {
         final int userID = Auth.getUserFromContext(ctx);
         final Optional<Tracked> res = Projects.getActiveTracking(userID);
         Responses.setResponseOrError(ctx, res, true);
@@ -621,7 +634,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void getMonth(final Context ctx) throws SQLException {
+    public static void getMonth(final Context ctx) throws SQLException, IllegalAccessException {
         final int userID = Auth.getUserFromContext(ctx);
         final double res = Projects.getTrackedMinutesThisMonth(userID);
         Responses.setResponseOrError(ctx, res);
@@ -647,7 +660,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void stopTracking(final Context ctx) throws SQLException {// throws SQLException {
+    public static void stopTracking(final Context ctx) throws SQLException, IllegalAccessException {// throws SQLException {
         final int userID = Auth.getUserFromContext(ctx);
         final Integer id = ctx.bodyAsClass(Integer.class);
         final boolean res = Projects.stopTracking(id, userID);
@@ -674,7 +687,7 @@ public class Users {
                     @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
             }
     )
-    public static void updatePassword(final Context ctx) throws SQLException {
+    public static void updatePassword(final Context ctx) throws SQLException, IllegalAccessException {
         final String newPass = ctx.bodyAsClass(String.class);
         final int userID = Auth.getUserFromContext(ctx);
         final boolean res = de.OneManProjects.database.Users.updatePassword(userID, Auth.hashPassword(newPass));

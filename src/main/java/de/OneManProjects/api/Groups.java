@@ -69,7 +69,7 @@ public class Groups {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void getGroupDetails(final Context ctx) throws SQLException {
+    public static void getGroupDetails(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserGroup(ctx)) {
             final int userId = Auth.getUserFromContext(ctx);
             final int groupId = ctx.bodyAsClass(Integer.class);
@@ -110,7 +110,7 @@ public class Groups {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void exportData(final Context ctx) throws SQLException {
+    public static void exportData(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserGroup(ctx)) {
             final ExportFilter filter = ctx.bodyAsClass(ExportFilter.class);
             if (filter.groupId().isPresent()) {
@@ -150,7 +150,7 @@ public class Groups {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void getGroupDataToAnalyse(final Context ctx) throws SQLException {
+    public static void getGroupDataToAnalyse(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserGroup(ctx)) {
             final int userId = Auth.getUserFromContext(ctx);
             final DataFilter filter = ctx.bodyAsClass(DataFilter.class);
@@ -189,7 +189,7 @@ public class Groups {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void groupUserCreateGroup(final Context ctx) throws SQLException {
+    public static void groupUserCreateGroup(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserGroup(ctx)) {
             final int userID = Auth.getUserFromContext(ctx);
             final de.OneManProjects.data.Group newGroup = ctx.bodyAsClass(de.OneManProjects.data.Group.class);
@@ -220,7 +220,7 @@ public class Groups {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void groupDelete(final Context ctx) throws SQLException {
+    public static void groupDelete(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserGroup(ctx)) {
             final int userID = Auth.getUserFromContext(ctx);
             final int groupId = ctx.bodyAsClass(Integer.class);
@@ -256,7 +256,7 @@ public class Groups {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void groupUserInvite(final Context ctx) throws SQLException, MessagingException {
+    public static void groupUserInvite(final Context ctx) throws SQLException, MessagingException, IllegalAccessException {
         if (Auth.isUserGroup(ctx)) {
             final int userID = Auth.getUserFromContext(ctx);
             final GroupToUser groupToUser = ctx.bodyAsClass(GroupToUser.class);
@@ -302,7 +302,7 @@ public class Groups {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void groupUserRemove(final Context ctx) throws SQLException {
+    public static void groupUserRemove(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserGroup(ctx)) {
             final int userID = Auth.getUserFromContext(ctx);
             final GroupToUser groupToUser = ctx.bodyAsClass(GroupToUser.class);
@@ -339,7 +339,7 @@ public class Groups {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void groupAddProject(final Context ctx) throws SQLException {
+    public static void groupAddProject(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserGroup(ctx)) {
             final int userID = Auth.getUserFromContext(ctx);
             final Project project = ctx.bodyAsClass(Project.class);
@@ -373,7 +373,7 @@ public class Groups {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void groupUpdate(final Context ctx) throws SQLException {
+    public static void groupUpdate(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserGroup(ctx)) {
             final int userID = Auth.getUserFromContext(ctx);
             final de.OneManProjects.data.Group group = ctx.bodyAsClass(de.OneManProjects.data.Group.class);
@@ -407,7 +407,7 @@ public class Groups {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void groupDeleteProject(final Context ctx) throws SQLException {
+    public static void groupDeleteProject(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserGroup(ctx)) {
             final int userID = Auth.getUserFromContext(ctx);
             final IdTupel tuple = ctx.bodyAsClass(IdTupel.class);
@@ -436,7 +436,7 @@ public class Groups {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void getManagedGroups(final Context ctx) throws SQLException {
+    public static void getManagedGroups(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserGroup(ctx)) {
             final int userId = Auth.getUserFromContext(ctx);
             final List<Group> groups = de.OneManProjects.database.Groups.getManagedGroups(userId);
@@ -465,7 +465,7 @@ public class Groups {
                     @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class))
             }
     )
-    public static void userLeaveGroup(final Context ctx) throws SQLException {
+    public static void userLeaveGroup(final Context ctx) throws SQLException, IllegalAccessException {
         final int groupId = ctx.bodyAsClass(Integer.class);
         final int userId = Auth.getUserFromContext(ctx);
         final boolean res = de.OneManProjects.database.Groups.leaveGroup(userId, groupId);

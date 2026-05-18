@@ -36,10 +36,13 @@ import de.OneManProjects.data.dto.Login;
 import de.OneManProjects.data.enums.Role;
 import de.OneManProjects.database.Tokens;
 import de.OneManProjects.database.Users;
+import de.OneManProjects.utils.Util;
 import io.javalin.http.Context;
 import io.javalin.http.Cookie;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.SameSite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import java.security.SecureRandom;
@@ -47,17 +50,24 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class Auth {
+    private static final Logger logger = LoggerFactory.getLogger(Auth.class);
     final static String ISSUER = "1ManProjects";
     public final static int JWT_LIFETIME_SEC = 3600 * 5;
     public final static int REFRESH_LIFETIME_SEC = 7 * 24 * 3600;
 
-    private static final Algorithm ALGORITHM = Algorithm.HMAC256(generateSecretKey());
+    private static final Algorithm ALGORITHM = Algorithm.HMAC256(loadSecret());
+
+    private static String loadSecret() {
+        final Optional<String> secret = Util.getEnvVar("JWT_SECRET", s -> s, false);
+        if (secret.isEmpty()) {
+            logger.warn("JWT_SECRET not set as ENV VAR, creating a random one. Users will be logged out on restarts");
+            return generateSecretKey();
+        }
+        return secret.get();
+    }
 
     private static String generateSecretKey() {
         final int size = 256;
@@ -171,7 +181,7 @@ public class Auth {
         return Optional.empty();
     }
 
-    public static int getUserFromContext(final Context ctx) {
+    public static int getUserFromContext(final Context ctx) throws IllegalAccessException {
         if (ctx.cookieMap().containsKey("jwt")) {
             final String token = ctx.cookie("jwt");
             final Optional<DecodedJWT> decodedJWT = validateAndDecodeToken(token);
@@ -188,40 +198,28 @@ public class Auth {
                     }
                 } catch (final SQLException e) {
                     ctx.status(HttpStatus.BAD_REQUEST);
-                    return -1;
+                    throw new IllegalAccessException();
                 }
             }
         }
         ctx.status(HttpStatus.BAD_REQUEST);
-        return -1;
+        throw new IllegalAccessException();
     }
 
-    public static boolean isUserAdmin(final Context ctx) throws SQLException {
+    public static boolean isUserAdmin(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = getUserFromContext(ctx);
         final List<Role> roles = Users.getUserRoles(userId);
         return roles.contains(Role.ADMIN);
     }
 
-    public static boolean isUserGroup(final Context ctx) throws SQLException {
+    public static boolean isUserGroup(final Context ctx) throws SQLException, IllegalAccessException {
         final int userId = getUserFromContext(ctx);
         final List<Role> roles = Users.getUserRoles(userId);
         return roles.contains(Role.GROUP) || roles.contains(Role.ADMIN);
     }
 
-    public static String generateApiToken() throws IllegalStateException {
-        UUID uuid = UUID.randomUUID();
-        for (int i = 0; i < 50; i++) {
-            try {
-                // Check if the UUID already exists in the database
-                if (Tokens.getToken(uuid.toString()).isEmpty()) {
-                    return uuid.toString();
-                }
-            } catch (final SQLException e) {
-                throw new IllegalStateException("Error cannot connect to DB to check new Token");
-            }
-            uuid = UUID.randomUUID();
-        }
-        throw new IllegalStateException("Could not generate a unique API token after 50 attempts.");
+    public static String generateApiToken() {
+        return UUID.randomUUID().toString();
     }
 
     public static String createRandomPassword() {
@@ -231,22 +229,23 @@ public class Auth {
         final char[] UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
         final char[] NUMBERS = "0123456789".toCharArray();
         final char[] ALL_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789^$*.[]{}()?-\"!@#%&/\\,><':;|_~`".toCharArray();
-        final Random rand = new SecureRandom();
+        final SecureRandom rand = new SecureRandom();
 
-        final char[] password = new char[size];
-        password[0] = LOWERCASE[rand.nextInt(LOWERCASE.length)];
-        password[1] = UPPERCASE[rand.nextInt(UPPERCASE.length)];
-        password[2] = NUMBERS[rand.nextInt(NUMBERS.length)];
-        password[3] = SYMBOLS[rand.nextInt(SYMBOLS.length)];
+        final List<Character> password = new ArrayList<>();
+        password.add(LOWERCASE[rand.nextInt(LOWERCASE.length)]);
+        password.add(UPPERCASE[rand.nextInt(UPPERCASE.length)]);
+        password.add(NUMBERS[rand.nextInt(NUMBERS.length)]);
+        password.add(SYMBOLS[rand.nextInt(SYMBOLS.length)]);
+
         for (int i = 4; i < size; i++) {
-            password[i] = ALL_CHARS[rand.nextInt(ALL_CHARS.length)];
+            password.add(ALL_CHARS[rand.nextInt(ALL_CHARS.length)]);
         }
-        for (int i = 0; i < password.length; i++) {
-            final int randomPosition = rand.nextInt(password.length);
-            final char temp = password[i];
-            password[i] = password[randomPosition];
-            password[randomPosition] = temp;
+        Collections.shuffle(password, rand);
+
+        final char[] result = new char[size];
+        for (int i = 0; i < size; i++) {
+            result[i] = password.get(i);
         }
-        return new String(password);
+        return new String(result);
     }
 }

@@ -34,5 +34,5 @@ import java.sql.SQLException;
 
 public interface Action {
 
-    void run(Context ctx) throws SQLException, MessagingException, IOException;
+    void run(Context ctx) throws SQLException, MessagingException, IOException, IllegalAccessException;
 }

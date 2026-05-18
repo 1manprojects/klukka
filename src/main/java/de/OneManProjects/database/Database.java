@@ -29,7 +29,10 @@ package de.OneManProjects.database;
 import de.OneManProjects.utils.Util;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
 
 public class Database {
 
@@ -166,7 +169,7 @@ public class Database {
                 "(" +
                 "id SERIAL PRIMARY KEY," +
                 "idUser INTEGER REFERENCES " + USERS_TABLE + "(id) ON DELETE CASCADE," +
-                "token TEXT NOT NULL," +
+                "token TEXT NOT NULL ," +
                 "token_type INTEGER," +
                 "description TEXT," +
                 "expiration TIMESTAMP" +
@@ -174,6 +177,8 @@ public class Database {
         final String addCommentColumn =
                 "ALTER TABLE " + TRACKING_TABLE +
                         " ADD COLUMN IF NOT EXISTS comment TEXT";
+        final String updateTokenColumn =
+                "ALTER TABLE " + TOKEN_TABLE+ " ADD CONSTRAINT tokens_token_unique UNIQUE (token)";
         try(final Connection con = getConnection()) {
             try(final Statement st = con.createStatement()) {
                 st.execute(createUserTable);
@@ -184,6 +189,7 @@ public class Database {
                 st.execute(createTrackedTable);
                 st.execute(createTokenTable);
                 st.execute(addCommentColumn);
+                st.execute(updateTokenColumn);
             }
         }
         setAdminIfNotExists();

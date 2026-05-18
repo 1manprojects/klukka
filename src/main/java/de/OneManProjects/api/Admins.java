@@ -71,7 +71,7 @@ public class Admins {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void adminUpdateRoles(final Context ctx) throws SQLException {
+    public static void adminUpdateRoles(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserAdmin(ctx)) {
             final User user = ctx.bodyAsClass(User.class);
             final boolean res = Users.updateUserRole(user.id(), user.roles());
@@ -101,7 +101,7 @@ public class Admins {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void adminAddNewUser(final Context ctx) throws SQLException, MessagingException, IOException {
+    public static void adminAddNewUser(final Context ctx) throws SQLException, MessagingException, IOException, IllegalAccessException {
         if (Auth.isUserAdmin(ctx)) {
             final User newUser = ctx.bodyAsClass(User.class);
             final String p = Auth.createRandomPassword();
@@ -135,7 +135,7 @@ public class Admins {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void adminDeleteUser(final Context ctx) throws SQLException {
+    public static void adminDeleteUser(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserAdmin(ctx)) {
             final int userToDel = ctx.bodyAsClass(Integer.class);
             final boolean res1 = Users.deleteUser(userToDel);
@@ -166,7 +166,7 @@ public class Admins {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void adminDeleteGroup(final Context ctx) throws SQLException {
+    public static void adminDeleteGroup(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserAdmin(ctx)) {
             final int groupToDelete = ctx.bodyAsClass(Integer.class);
             final boolean res1 = Groups.deleteGroup(groupToDelete);
@@ -191,7 +191,7 @@ public class Admins {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void getAdminData(final Context ctx) throws SQLException {
+    public static void getAdminData(final Context ctx) throws SQLException, IllegalAccessException {
         if (Auth.isUserAdmin(ctx)) {
             Responses.setResponseOrError(ctx, Optional.of(new AdminData(Users.getAllUsers(), Groups.getAllGroups(), new ArrayList<>())), false);
         } else {
@@ -214,7 +214,7 @@ public class Admins {
                     @OpenApiResponse(status = "403", description = "FORBIDDEN")
             }
     )
-    public static void setPrivacyHtml(final Context ctx) throws IOException, SQLException {
+    public static void setPrivacyHtml(final Context ctx) throws IOException, SQLException, IllegalAccessException {
         if (Auth.isUserAdmin(ctx)) {
             final PrivacyInfo toUpdate = ctx.bodyAsClass(PrivacyInfo.class);
             Files.writeString(PRIVACY_HTML, toUpdate.html(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);

@@ -5,6 +5,7 @@ services:
       - postgres
     environment:
       - APPLICATION_URL=
+      - JWT_SECRET= #create a secret with 'openssl rand -base64 64'
       - ADMIN_USER_NAME=
       - ADMIN_PASSWORD=
       - DATABASE_PORT=5432
