@@ -22,6 +22,12 @@ Klukka (Icelandic for clock) is a simple and easy to use Time Tracking service t
 - Manage Groups to share Projects with multiple people to track times on the same Project
 - Group admins can view and analyze the groups tracked times
 
+## Android App
+[![Download APK](https://img.shields.io/badge/Download-APK-3DDC84?logo=android&logoColor=white)](https://github.com/1manprojects/klukka-android/releases/latest)
+
+Track times and manage the data on Android with the App
+
+
 ## Docker
 The most simple way is to run with docker-compose using the docker-compose.yaml file in the repository. Update the envirmoent variables with your own data and run docker compose up -d
 
