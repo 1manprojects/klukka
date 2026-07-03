@@ -30,6 +30,7 @@ various projects in a browser.
 
 Track times and manage the data on Android with the App
 
+
 ## Docker
 
 The most simple way is to run with docker-compose using the docker-compose.yaml file in the repository. Update the
