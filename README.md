@@ -1,5 +1,7 @@
 # Klukka
-Klukka (Icelandic for clock) is a simple and easy to use Time Tracking service that allows you to track times spent an various projects in a browser.
+
+Klukka (Icelandic for clock) is a simple and easy to use Time Tracking service that allows you to track times spent an
+various projects in a browser.
 
 ## Screenshots
 
@@ -15,18 +17,26 @@ Klukka (Icelandic for clock) is a simple and easy to use Time Tracking service t
 </table>
 
 ## Features
-- Manage multiple projects with ease and track times to the second in your browser Mobile or Desktop. 
+
+- Manage multiple projects with ease and track times to the second in your browser Mobile or Desktop.
 - Easily switch between projects. All your tracked times can be viewed and edited in a calendar.
 - Gain insights into the times where you have spent the most time
 - Export the Data as CSV
 - Manage Groups to share Projects with multiple people to track times on the same Project
 - Group admins can view and analyze the groups tracked times
 
+## Android App
+[![Download APK](https://img.shields.io/badge/Download-APK-3DDC84?logo=android&logoColor=white)](https://github.com/1manprojects/klukka-android/releases/latest)
+
+Track times and manage the data on Android with the App
+
 ## Docker
-The most simple way is to run with docker-compose using the docker-compose.yaml file in the repository. Update the envirmoent variables with your own data and run docker compose up -d
+
+The most simple way is to run with docker-compose using the docker-compose.yaml file in the repository. Update the
+envirmoent variables with your own data and run docker compose up -d
 
 ## API
-The API can be viewed via swagger or OpenAPI with /swagger or /open API per browser with the URL you have setup
 
+The API can be viewed via swagger or OpenAPI with /swagger or /open API per browser with the URL you have setup
 
 License: MIT
