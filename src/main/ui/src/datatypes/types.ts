@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2026-05-16 15:42:51.
+// Generated using typescript-generator version 3.2.1263 on 2026-07-09 13:46:25.
 
 export interface Group {
     id: number;
@@ -76,6 +76,11 @@ export interface ExportFilter {
     filter: DataFilter;
     detailed: boolean;
     groupId?: number;
+}
+
+export interface ExportUserData {
+    projects: Project[];
+    trackedItems: any[];
 }
 
 export interface GroupDetails {
