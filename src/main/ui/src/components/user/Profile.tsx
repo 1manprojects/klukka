@@ -24,13 +24,13 @@
  * #L%
  */
 import { Fragment, ReactElement, useEffect, useState } from "react"
-import { createUserToken, deleteAccount, deleteUserToken, getUserDetails, leaveGroup, updateEmail, updatePassword } from "../../Api";
+import { createUserToken, deleteAccount, deleteUserToken, downloadDataExport, getUserDetails, importDataExport, leaveGroup, updateEmail, updatePassword } from "../../Api";
 import './profile.scss'
-import { Project, UserApiToken, UserData } from "../../datatypes/types";
+import { ExportUserData, Project, UserApiToken, UserData } from "../../datatypes/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDoorOpen, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { EditProject } from "../common/editProject/EditProject";
-import { getShortDate } from "../../Func";
+import { getShortDate, showToast } from "../../Func";
 
 
 export type DialogType = "NONE" | "PROJECT" | "GROUP";
@@ -44,6 +44,7 @@ export const Profile = (): ReactElement => {
     const [dialog, setDialog] = useState<DialogType>("NONE");
     const [newToken, setNewToken] = useState<UserApiToken>({id: -1, description: "", expiration: null});
     const [tokenValue, setTokenValue] = useState<string| null>(null);
+    const [fileUpload, setFileUpload] = useState<File | null>(null);
 
     const fetchAndSetData = async (): Promise<void> => {
         const data = await getUserDetails();
@@ -138,6 +139,20 @@ export const Profile = (): ReactElement => {
         setDialog("NONE");
         setProject(-1);
         fetchAndSetData();
+    }
+
+    const onImport = async (): Promise<boolean> => {
+        if (fileUpload && confirm("Importing data will not Overwrite existing Data but will add the imported data to your account.\n" +
+            "Do you want to continue?")) {
+            try {
+                const toUpload: ExportUserData = JSON.parse(await fileUpload.text());
+                return await importDataExport(toUpload);
+            } catch {
+                showToast(false, "", "Error while importing data. Please make sure the file is a valid export file.");
+                return false;
+            }
+        }
+        return false;
     }
 
     const render = (): ReactElement => {
@@ -238,6 +253,14 @@ export const Profile = (): ReactElement => {
                         ))}
                     </tbody>
                 </table>
+            </div>
+            <hr/>
+            <h2>Export / Import</h2>
+            <span>Export and Import your data (includes only personal Projects and time Tracking entries)</span>
+            <div className="export-import">
+                <button onClick={() => downloadDataExport()}>Export Data</button>
+                <input type="file" accept=".json" onChange={(e) => setFileUpload(e.target.files?.[0] || null)} />
+                <button onClick={onImport}>Import Data</button>
             </div>
             <hr/>
             <h2>Delete Account</h2>
