@@ -680,4 +680,53 @@ public class Users {
         final boolean res = de.OneManProjects.database.Users.updatePassword(userID, Auth.hashPassword(newPass));
         Responses.setResponseOrError(ctx, res);
     }
+
+    @OpenApi(
+            summary = "Export User Data",
+            tags = {"User"},
+            operationId = "user export data",
+            path = "/api/user/export",
+            methods = HttpMethod.GET,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = ExportUserData.class)),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
+    )
+    public static void userDataExport(final Context ctx) throws SQLException {
+        final int userId = Auth.getUserFromContext(ctx);
+        final List<Project> userProjects = Projects.getProjects(userId, true);
+        final List<Tracked> userTracked = Projects.getAllTrackedData(userId);
+        Responses.setResponseOrError(ctx, new ExportUserData(userProjects, userTracked));
+    }
+
+    @OpenApi(
+            summary = "Import User Data",
+            tags = {"User"},
+            operationId = "user import data",
+            path = "/api/user/import",
+            methods = HttpMethod.POST,
+            security = {
+                    @OpenApiSecurity(name = "jwtCookie"),
+                    @OpenApiSecurity(name = "Authorization")
+            },
+            requestBody = @OpenApiRequestBody(
+                    content = {@OpenApiContent(from = ExportUserData.class)},
+                    description = "Projects and tracked info",
+                    required = true
+            ),
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = BooleanResponse.class)),
+                    @OpenApiResponse(status = "401", description = "UNAUTHORIZED")
+            }
+    )
+    public static void importUserData(final Context ctx) throws SQLException {
+        final int userID = Auth.getUserFromContext(ctx);
+        final ExportUserData toImport = ctx.bodyAsClass(ExportUserData.class);
+        final boolean res = Projects.importUserData(userID, toImport);
+        Responses.setResponseOrError(ctx, res);
+    }
 }

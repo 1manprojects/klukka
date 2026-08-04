@@ -31,7 +31,7 @@ import java.sql.Timestamp;
 public class Tracked {
     private final int id;
     private int user;
-    private final int projectId;
+    private int projectId;
     private final Timestamp start;
     private final Timestamp end;
     private final String timezone;
@@ -109,5 +109,10 @@ public class Tracked {
 
     public void setComment(final String newComment) {
         this.comment = newComment;
+    }
+
+    public void overrideIds(final int newUserId, final int newProjectID) {
+        this.user = newUserId;
+        this.projectId = newProjectID;
     }
 }

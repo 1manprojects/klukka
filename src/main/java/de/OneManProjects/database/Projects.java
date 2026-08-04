@@ -29,6 +29,7 @@ package de.OneManProjects.database;
 import de.OneManProjects.data.Group;
 import de.OneManProjects.data.Project;
 import de.OneManProjects.data.Tracked;
+import de.OneManProjects.data.dto.ExportUserData;
 import de.OneManProjects.data.enums.RefType;
 
 import java.sql.*;
@@ -184,6 +185,28 @@ public class Projects {
                 Projects::parseTracked,
                 userid, fromStart, fromEnd
         );
+    }
+
+    public static List<Tracked> getAllTrackedData(final int userId) throws SQLException{
+        return Database.executeQueryList(
+                "SELECT * FROM " + Database.TRACKING_TABLE + " WHERE idUser = ?",
+                Projects::parseTracked,
+                userId
+        );
+    }
+
+    public static boolean importUserData(final int userID, ExportUserData toImport) throws SQLException {
+        boolean res = false;
+        for (final Project p : toImport.projects()) {
+            final List<Tracked> tracked = toImport.trackedItems().stream()
+                    .filter(t -> t.getProjectId() == p.getId()).toList();
+            final int newProjectId = addProject(p, userID);
+            for (final Tracked t : tracked) {
+                t.overrideIds(userID, newProjectId);
+                res = addTracking(t) > 0;
+            }
+        }
+        return res;
     }
 
     public static List<Tracked> getGroupTrackedForRange(final List<Integer> groupProjectIds, final Instant start, final Instant end) throws SQLException {

@@ -24,7 +24,7 @@
  * #L%
  */
 import { AnalysisData, Tracked } from "./datatypes/final";
-import { AdminData, Login, Project, Role, Start, User, UserProjects, Group, GroupDetails, GroupToUser, IdTupel, DataFilter, ExportFilter, UserData, PasswordReset, ArchiveId, UserApiToken, DepInfo, PrivacyInfo } from "./datatypes/types";
+import { AdminData, Login, Project, Role, Start, User, UserProjects, Group, GroupDetails, GroupToUser, IdTupel, DataFilter, ExportFilter, UserData, PasswordReset, ArchiveId, UserApiToken, DepInfo, PrivacyInfo, ExportUserData } from "./datatypes/types";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL ?? `${window.location.origin}/api/`;
 
@@ -148,14 +148,14 @@ export const runValidate = async (): Promise<boolean> => {
     return false
 }
 
-const runBinary = async (method: string, body: any): Promise<BinaryResponse | null> => {
+const runBinary = async (method: string, body?: any): Promise<BinaryResponse | null> => {
     const head = new Headers();
     head.append('Content-Type', 'application/json; charset=UTF-8');
     const response = await fetch(BASE_URL + method, {
-            method: 'POST',
+            method: body? 'POST' : 'GET',
             headers: head,
             credentials: "include",
-            body: JSON.stringify(body),
+            body: body? JSON.stringify(body) : undefined,
         });
     if (await checkResponse(response)) {
         const blob = await response.blob();
@@ -420,6 +420,27 @@ export const getPrivacyInfo = async(): Promise<PrivacyInfo| null> => {
 
 export const updatePrivacyInfo = async(toUpdate: PrivacyInfo): Promise<boolean> => {
     const res = await runPost("admin/setPrivacy", toUpdate);
+    return returnOrDefault<boolean>(res, false);
+}
+
+export const downloadDataExport = async(): Promise<string | null> => {
+    const res: BinaryResponse | null = await runBinary("user/export");
+    if (res !== null) {
+        const url = window.URL.createObjectURL(res.blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'KlukkaDataExport.json';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        return 'KlukkaDataExport.json';
+    }
+    return null;
+}
+
+export const importDataExport = async(toImport: ExportUserData): Promise<boolean> => {
+    const res = await runPost("user/import", toImport);
     return returnOrDefault<boolean>(res, false);
 }
 

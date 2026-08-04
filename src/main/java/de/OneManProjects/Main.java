@@ -202,10 +202,12 @@ public class Main {
                 post("api/user/changeMail", ctx -> runAction(ctx, Users::updateUserMail, true));
                 post("api/user/createToken", ctx -> runAction(ctx, Users::createUserApiToken, true));
                 post("api/user/deleteToken", ctx -> runAction(ctx, Users::deleteToken, true));
+                post("api/user/import", ctx -> runAction(ctx, Users::importUserData, true));
                 get("api/user/leaveGroup", ctx -> runAction(ctx, Groups::userLeaveGroup, true));
                 get("api/user/data", ctx -> runAction(ctx, Users::getUserData, true));
                 get("api/user/delete", ctx -> runAction(ctx, Users::deleteAccount, true));
                 get("api/user/listTokens", ctx -> runAction(ctx, Users::getUserTokens, true));
+                get("api/user/export", ctx -> runAction(ctx, Users::userDataExport, true));
 
                 post("api/group/create", ctx -> runAction(ctx, Groups::groupUserCreateGroup, true));
                 post("api/group/update", ctx -> runAction(ctx, Groups::groupUpdate, true));
