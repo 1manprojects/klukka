@@ -263,4 +263,39 @@
             }
         }
     }
+
+    .export-import {
+
+        button {
+            margin-left: auto;
+            padding: var(--space-sm) var(--space-md);
+            background-color: var(--color-accent);
+            color: var(--color-text-on-dark);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color var(--transition-base);
+
+            &:hover {
+                background-color: var(--color-accent-hover);
+            }
+        }
+        .upload {
+            margin-top: 1rem;
+            display: grid;
+
+            input {
+                padding: 1rem;
+                font-size: large;
+            }
+
+            button {
+                margin-right: auto;
+                margin-left: unset;
+            }
+        }
+
+    }
 }
