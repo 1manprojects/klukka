@@ -9,21 +9,21 @@
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
     "@fortawesome/react-fontawesome": "^3.5.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.2.0",
-    "@types/react-dom": "^19.2.4",
-    "@vitejs/plugin-react": "^6.1.0",
+    "@types/node": "^26.6.4",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
     "jquery-circle-progress": "^1.2.2",
-    "moment-timezone": "^0.6.3",
-    "react": "^19.2.8",
+    "moment-timezone": "^0.6.5",
+    "react": "^19.3.0",
     "react-big-calendar": "^1.20.0",
     "react-circular-progressbar": "^2.2.0",
-    "react-dom": "^19.2.8",
-    "react-router": "^8.3.0",
+    "react-dom": "^19.3.0",
+    "react-router": "^8.4.0",
     "react-select": "^5.10.2",
     "react-toastify": "^11.1.0",
     "recharts": "^3.10.1",
-    "typescript": "^6.0.3",
-    "vite": "^8.2.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2",
     "vite-tsconfig-paths": "^6.1.1"
   },
   "overrides": {
@@ -34,14 +34,8 @@
   "scripts": {
     "start": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "oxlint --type-aware",
     "preview": "vite preview"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -56,23 +50,17 @@
     ]
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.4",
     "@types/node-sass": "^4.11.8",
-    "@types/react": "^19.2.18",
+    "@types/react": "^19.3.0",
     "@types/react-big-calendar": "^1.16.3",
     "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.67.0",
-    "@typescript-eslint/parser": "^8.67.0",
     "@vitejs/plugin-react": "^6.0.3",
-    "eslint": "^9.39.4",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.4",
-    "globals": "^17.11.0",
+    "globals": "^17.13.0",
     "npm-run-all": "^4.1.5",
-    "sass": "^1.103.1",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.67.0",
+    "oxlint": "^1.86.0",
+    "oxlint-tsgolint": "^7.0.2003",
+    "sass": "^1.105.1",
+    "typescript": "^7.0.2",
     "vite": "^8.1.3"
   }
 }
