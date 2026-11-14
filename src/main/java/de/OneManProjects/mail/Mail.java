@@ -45,6 +45,7 @@ public class Mail {
         final Optional<String> smptssl = Util.getEnvVar("SMTP_SSL", s -> s, true);
         final Optional<String> smptUser = Util.getEnvVar("SMTP_USER", s -> s, true);
         final Optional<String> stmpPass = Util.getEnvVar("SMTP_PASSWORD", s -> s, true);
+        final Optional<String> mailFrom = Util.getEnvVar("MAIL_FROM", s -> s, true);
 
         final Properties props = new Properties();
         props.put("mail.smtp.auth", smptAuth.get());
@@ -60,7 +61,7 @@ public class Mail {
             }
         });
         final Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress("noreply@1manprojects.de"));
+        message.setFrom(new InternetAddress(mailFrom.get()));
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(receiver));
 
         final MimeBodyPart mimeBodyPart = new MimeBodyPart();
