@@ -1,4 +1,4 @@
-FROM eclipse-temurin:25-jre-alpine
+FROM amazoncorretto:25-alpine
 
 ENV APPLICATION_PORT=3001
 
