@@ -28,6 +28,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '25'
+          check-latest: true
+
+      - name: Show Java version
+        run: java -version
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
